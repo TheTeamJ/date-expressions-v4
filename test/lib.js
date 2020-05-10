@@ -16,9 +16,14 @@ function testRanges (source, results) {
   assert.deepEqual(DateExpressions.format(res.momentRanges), results)
 }
 
-const expandD = (d, { y, m, h }) => {
+const getLastDate = ({ y, m }) => {
+  return moment.tz(DateExpressions.timezone).year(parseInt(y)).month(parseInt(m) - 1).endOf('month').date()
+}
+
+const expandD = ({ y, m, h }) => {
   const res = []
-  for (let j = d[0]; j <= d[1]; j++) {
+  const lastDate = getLastDate({ y, m })
+  for (let j = 1; j <= lastDate; j++) {
     const strD = `${j}`.padStart(2, '0')
     const range = [
       `${y}/${m}/${strD} ${h}:00`,
@@ -33,12 +38,12 @@ const expandMD = ({ y, h }) => {
   const res = []
   for (let m = 0; m <= 11; m++) {
     const strM = `${m + 1}`.padStart(2, '0')
-    const lastDate = moment.tz(DateExpressions.timezone).year(parseInt(y)).month(m).endOf('month').date()
+    const lastDate = getLastDate({ y, m: m + 1 })
     for (let d = 1; d <= lastDate; d++) {
       const strD = `${d}`.padStart(2, '0')
       const range = [
         `${y}/${strM}/${strD} ${h}:00`,
-        `${y}/${strM}/${strD} ${h}:59`,
+        `${y}/${strM}/${strD} ${h}:59`
       ]
       res.push(range)
     }
