@@ -151,15 +151,18 @@ const basicMutations = [
   [
     /(\d{4})年?/,
     function (matched, currentRanges, currentLockUnits) {
-      if (currentLockUnits.y) return emptyRanges()
+      // if (currentLockUnits.y) return emptyRanges()
       const year = parseInt(matched[1])
       const resRanges = []
       for (const currentRange of currentRanges) {
-        const ranges = [[
+        let ranges = [[
           currentRange[0].clone().year(year).startOf('year'),
           currentRange[1].clone().year(year).endOf('year')
         ]]
         if (currentLockUnits.m) inheritM(ranges, currentRange)
+        if (currentLockUnits.y) {
+          ranges = intersection(currentRange, ranges)
+        }
         resRanges.push(...ranges)
       }
       return { ranges: resRanges, lockUnits: ['y'] }
@@ -288,7 +291,6 @@ const basicMutations = [
         if (currentLockUnits.y) inheritY(ranges, currentRange)
         if (currentLockUnits.h) inheritH(ranges, currentRange)
         if (currentLockUnits.m || currentLockUnits.d) {
-          // debug('>>>>>', currentRanges)
           ranges = intersection(currentRange, ranges)
         }
         resRanges.push(...ranges)
