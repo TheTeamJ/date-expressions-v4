@@ -219,62 +219,77 @@ const basicMutations = [
       return { ranges: resRanges, lockUnits: ['h'] }
     }
   ],
+  // m,d固定型
   [
     /(元旦|元日)/,
     function (matched, currentRanges, currentLockUnits) {
-      if (currentLockUnits.m || currentLockUnits.d) return emptyRanges()
+      // if (currentLockUnits.m || currentLockUnits.d) return emptyRanges()
       const resRanges = []
       for (const currentRange of currentRanges) {
-        const ranges = [[
+        let ranges = [[
           currentRange[0].clone().month(0).date(1).startOf('date'),
           currentRange[1].clone().month(0).date(1).endOf('date')
         ]]
         if (currentLockUnits.y) inheritY(ranges, currentRange)
         if (currentLockUnits.h) inheritH(ranges, currentRange)
+        if (currentLockUnits.m || currentLockUnits.d) {
+          ranges = intersection(currentRange, ranges)
+        }
         resRanges.push(...ranges)
       }
       return { ranges: resRanges, lockUnits: ['m', 'd'] }
     }
   ],
-  // [
-  //   /(春)/,
-  //   function (matched, currentRanges, currentLockUnits) {
-  //     const resRanges = []
-  //     for (const currentRange of currentRanges) {
-  //       let ranges = [[
-  //         currentRange[0].clone().month(2).startOf('month'), // 3月
-  //         currentRange[1].clone().month(4).endOf('month') // 5月
-  //       ]]
-  //       if (currentLockUnits.y) inheritY(ranges, currentRange)
-  //       if (currentLockUnits.m || currentLockUnits.d || currentLockUnits.h) {
-  //         ranges = intersection(currentRange, ranges)
-  //       }
-  //       resRanges.push(...ranges)
-  //     }
-  //     return { ranges: resRanges, lockUnits: ['m'] }
-  //   }
-  // ],
   [
-    /(夏休み)/,
+    /(ハッピーデー)/,
+    function (matched, currentRanges, currentLockUnits) {
+      const resRanges = []
+      for (const currentRange of currentRanges) {
+        let ranges = [[
+          // 8/8
+          currentRange[0].clone().month(7).date(8).startOf('date'),
+          currentRange[0].clone().month(7).date(8).endOf('date')
+        ], [
+          // 11/11
+          currentRange[0].clone().month(10).date(11).startOf('date'),
+          currentRange[1].clone().month(10).date(11).endOf('date')
+        ]]
+        if (currentLockUnits.y) inheritY(ranges, currentRange)
+        if (currentLockUnits.h) inheritH(ranges, currentRange)
+        if (currentLockUnits.m || currentLockUnits.d) {
+          // debug('>>>>>', currentRanges)
+          ranges = intersection(currentRange, ranges)
+        }
+        resRanges.push(...ranges)
+      }
+      return { ranges: resRanges, lockUnits: ['m', 'd'] }
+    }
+  ],
+  // y,m,d固定型
+  [
+    /(インターンシップ)/,
     function (matched, currentRanges, currentLockUnits) { }
-  ]
+  ],
   [/(春)/, season({ m: [3, 5] })],
   [/(夏)/, season({ m: [6, 8] })]
 ]
 
 const intersection = (baseRange, targetRanges) => {
-  let seedRange = [
-    baseRange[0].clone(),
-    baseRange[1].clone()
-  ]
+  // let seedRange = [
+  //   baseRange[0].clone(),
+  //   baseRange[1].clone()
+  // ]
+  const res = []
+  const seedRange = [baseRange[0].clone(), baseRange[1].clone()]
   for (const range of targetRanges) {
     const range1 = moment.range(seedRange[0], seedRange[1])
     const range2 = moment.range(range[0], range[1])
     const interRange = range1.intersect(range2)
-    if (!interRange || !interRange.start || !interRange.end) return [[]]
-    seedRange = [interRange.start, interRange.end]
+    if (!interRange || !interRange.start || !interRange.end) continue
+    res.push([interRange.start, interRange.end])
   }
-  return [seedRange]
+  // if (res.length === 0) res.push([])
+  return res
 }
 
 module.exports = {

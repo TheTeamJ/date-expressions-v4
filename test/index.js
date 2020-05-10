@@ -111,19 +111,34 @@ describe('Resolve date ranges', function () {
       ...expandD({ y: '2001', m: '04', h: '15' }),
       ...expandD({ y: '2001', m: '05', h: '15' })
     ])
-    // testRanges('15時/春', []) divdeD?
+    // testRanges('15時/春', []) divideD?
   })
 
-  it('fixed month and day', function () {
+  it('fixed day: month and day', function () {
+    // 単数
     testRanges('元旦', [['2020/01/01 00:00', '2020/01/01 23:59']])
     testRanges('元旦/13時', [['2020/01/01 13:00', '2020/01/01 13:59']])
     testRanges('2013年/元日', [['2013/01/01 00:00', '2013/01/01 23:59']])
     testRanges('2013年/元日/13時', [['2013/01/01 13:00', '2013/01/01 13:59']])
+    // 複数
+    testRanges('ハッピーデー', [
+      ['2020/08/08 00:00', '2020/08/08 23:59'],
+      ['2020/11/11 00:00', '2020/11/11 23:59']
+    ])
+    testRanges('2015年/ハッピーデー', [
+      ['2015/08/08 00:00', '2015/08/08 23:59'],
+      ['2015/11/11 00:00', '2015/11/11 23:59']
+    ])
+    testRanges('8月/ハッピーデー', [['2020/08/08 00:00', '2020/08/08 23:59']])
+    testRanges('ハッピーデー/11月', [['2020/11/11 00:00', '2020/11/11 23:59']])
   })
+
+  it('fixed ranges: year, month and day', function () {})
 
   it('should return empty range', function () {
     testRanges('2月/元旦', [])
     testRanges('春/7月', [])
+    testRanges('9月/ハッピーデー', [])
   })
 })
 
