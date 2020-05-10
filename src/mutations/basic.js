@@ -1,11 +1,12 @@
 const Moment = require('moment-timezone')
 const MomentRange = require('moment-range')
 const moment = MomentRange.extendMoment(Moment)
+const { divideM, divideD } = require('./dvide')
 const { debug, emptyRanges } = require('../lib')
 
 const tz = 'Asia/Tokyo'
 
-const season = ({ m }) => {
+const mRange = ({ m }) => {
   return function (matched, currentRanges, currentLockUnits) {
     const resRanges = []
     for (const currentRange of currentRanges) {
@@ -30,35 +31,6 @@ const season = ({ m }) => {
     }
     return { ranges: resRanges, lockUnits: ['m'] }
   }
-}
-
-const divideM = (ranges) => {
-  const res = []
-
-  for (const range of ranges) {
-    const [l, r] = range
-    if (l.month() === r.month()) {
-      res.push(range)
-      continue
-    }
-    if (l.month() === 0 && l.date() === 1 && r.month() === 11 && r.date() === 31) {
-      res.push(range)
-      continue
-    }
-
-    if (l.year() !== r.year()) {
-      res.push(range)
-      continue
-    }
-
-    for (let m = l.month(); m <= r.month(); m++) {
-      res.push([
-        l.clone().set('month', m).startOf('month'),
-        l.clone().set('month', m).endOf('month')
-      ])
-    }
-  }
-  return res
 }
 
 const inheritY = (ranges, currentRange) => {
@@ -182,7 +154,7 @@ const basicMutations = [
   [
     /(\d{1,2})日/,
     function (matched, currentRanges, currentLockUnits) {
-      if (currentLockUnits.d) return emptyRanges()
+      // if (currentLockUnits.d) return emptyRanges()
       const date = parseInt(matched[1])
       const resRanges = []
       currentRanges = divideM(currentRanges)
@@ -198,6 +170,9 @@ const basicMutations = [
             ranges = expandM(ranges, 'date')
           }
         }
+        if (currentLockUnits.d) {
+          ranges = intersection(currentRange, ranges)
+        }
         if (currentLockUnits.h) inheritH(ranges, currentRange)
         resRanges.push(...ranges)
       }
@@ -212,6 +187,7 @@ const basicMutations = [
       const resRanges = []
       if (currentLockUnits.m) {
         currentRanges = divideM(currentRanges)
+        currentRanges = divideD(currentRanges)
       }
       for (const currentRange of currentRanges) {
         let ranges = [[
@@ -307,8 +283,8 @@ const basicMutations = [
       return { ranges: resRanges, lockUnits: ['y', 'm', 'd'] }
     }
   ],
-  [/(春)/, season({ m: [3, 5] })],
-  [/(夏)/, season({ m: [6, 8] })]
+  [/(春)/, mRange({ m: [3, 5] })],
+  [/(夏)/, mRange({ m: [6, 8] })]
 ]
 
 const intersection = (baseRange, targetRanges) => {

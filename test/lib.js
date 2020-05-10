@@ -20,10 +20,10 @@ const getLastDate = ({ y, m }) => {
   return moment.tz(DateExpressions.timezone).year(parseInt(y)).month(parseInt(m) - 1).endOf('month').date()
 }
 
-const expandD = ({ y, m, h }) => {
+const expandD = ({ y, m, h, start, end }) => {
   const res = []
   const lastDate = getLastDate({ y, m })
-  for (let j = 1; j <= lastDate; j++) {
+  for (let j = (start || 1); j <= (end || lastDate); j++) {
     const strD = `${j}`.padStart(2, '0')
     const range = [
       `${y}/${m}/${strD} ${h}:00`,
