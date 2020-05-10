@@ -110,8 +110,6 @@ const expandM = (ranges, finestUnit, useLastMonthOfYear) => {
       res.push([
         l.clone().set('month', v).set('hour', l.hour()).startOf(finestUnit),
         l.clone().set('month', v).set('hour', r.hour()).set('minute', 59).endOf(finestUnit)
-        // l.clone().set('month', v).startOf(finestUnit),
-        // l.clone().set('month', v).endOf(finestUnit)
       ])
     }
   }
@@ -128,8 +126,6 @@ const expandD = (ranges, finestUnit, useLastDateOfMonth = false) => {
       res.push([
         l.clone().set('date', v).set('hour', l.hour()).startOf(finestUnit),
         l.clone().set('date', v).set('hour', r.hour()).set('minute', 59).endOf(finestUnit)
-        // l.clone().set('date', v).startOf(finestUnit),
-        // l.clone().set('date', v).endOf(finestUnit)
       ])
     }
   }
