@@ -15,6 +15,9 @@ const mRange = ({ m }) => {
       if (currentLockUnits.m || currentLockUnits.d || currentLockUnits.h) {
         ranges = divideM(ranges)
       }
+      if (currentLockUnits.h) {
+        ranges = divideD(ranges)
+      }
       if (currentLockUnits.y) inheritY(ranges, currentRange)
       if (currentLockUnits.m) {
         inheritM(ranges, currentRange)

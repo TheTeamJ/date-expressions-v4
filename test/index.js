@@ -111,7 +111,11 @@ describe('Resolve date ranges', function () {
       ...expandD({ y: '2001', m: '04', h: '15' }),
       ...expandD({ y: '2001', m: '05', h: '15' })
     ])
-    // testRanges('15時/春', []) divideD?
+    testRanges('15時/春', [
+      ...expandD({ y: '2020', m: '03', h: '15' }),
+      ...expandD({ y: '2020', m: '04', h: '15' }),
+      ...expandD({ y: '2020', m: '05', h: '15' })
+    ])
   })
 
   it('hRange', function () {
