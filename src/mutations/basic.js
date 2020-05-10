@@ -122,6 +122,20 @@ const expandD = (ranges, finestUnit, useLastDateOfMonth = false) => {
   return res
 }
 
+const expandY = (ranges, finestUnit, lrY) => {
+  const res = []
+  for (const range of ranges) {
+    const [l, r] = range
+    for (let v = lrY[0]; v <= lrY[1]; v++) {
+      res.push([
+        l.clone().set('year', v).startOf(finestUnit),
+        r.clone().set('year', v).endOf(finestUnit)
+      ])
+    }
+  }
+  return res
+}
+
 const basicMutations = [
   // 絶対的な表現
   [
@@ -268,17 +282,36 @@ const basicMutations = [
   // y,m,d固定型
   [
     /(インターンシップ)/,
-    function (matched, currentRanges, currentLockUnits) { }
+    function (matched, currentRanges, currentLockUnits) {
+      const resRanges = []
+      if (!currentLockUnits.y) {
+        currentRanges = expandY(currentRanges, detectFinestUnit(currentLockUnits), [2015, 2017])
+      }
+      if (currentLockUnits.m) currentRanges = divideM(currentRanges)
+      for (const currentRange of currentRanges) {
+        let ranges = [[
+          // 2015/08/10 ~ 2015/09/04
+          currentRange[0].clone().year(2015).month(7).date(10).startOf('date'),
+          currentRange[0].clone().year(2015).month(8).date(4).endOf('date')
+        ], [
+          // 2017/08/14 ~ 2017/09/29
+          currentRange[0].clone().year(2017).month(7).date(14).startOf('date'),
+          currentRange[1].clone().year(2017).month(8).date(29).endOf('date')
+        ]]
+        if (currentLockUnits.h) inheritH(ranges, currentRange)
+        if (currentLockUnits.y || currentLockUnits.m || currentLockUnits.d) {
+          ranges = intersection(currentRange, ranges)
+        }
+        resRanges.push(...ranges)
+      }
+      return { ranges: resRanges, lockUnits: ['y', 'm', 'd'] }
+    }
   ],
   [/(春)/, season({ m: [3, 5] })],
   [/(夏)/, season({ m: [6, 8] })]
 ]
 
 const intersection = (baseRange, targetRanges) => {
-  // let seedRange = [
-  //   baseRange[0].clone(),
-  //   baseRange[1].clone()
-  // ]
   const res = []
   const seedRange = [baseRange[0].clone(), baseRange[1].clone()]
   for (const range of targetRanges) {
@@ -288,8 +321,19 @@ const intersection = (baseRange, targetRanges) => {
     if (!interRange || !interRange.start || !interRange.end) continue
     res.push([interRange.start, interRange.end])
   }
-  // if (res.length === 0) res.push([])
   return res
+}
+
+const detectFinestUnit = currentLockUnits => {
+  const units = {
+    y: 'year',
+    m: 'month',
+    d: 'date',
+    h: 'hour'
+  }
+  for (const unit of Object.keys(units).reverse()) {
+    if (currentLockUnits[unit]) return units[unit]
+  }
 }
 
 module.exports = {
