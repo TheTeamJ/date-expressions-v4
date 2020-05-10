@@ -5,6 +5,62 @@ const { debug, emptyRanges } = require('../lib')
 
 const tz = 'Asia/Tokyo'
 
+const season = ({ m }) => {
+  return function (matched, currentRanges, currentLockUnits) {
+    const resRanges = []
+    for (const currentRange of currentRanges) {
+      let ranges = [[
+        currentRange[0].clone().month(m[0] - 1).startOf('month'),
+        currentRange[1].clone().month(m[1] - 1).endOf('month')
+      ]]
+      if (currentLockUnits.m || currentLockUnits.d || currentLockUnits.h) {
+        ranges = divideM(ranges)
+      }
+      if (currentLockUnits.y) inheritY(ranges, currentRange)
+      if (currentLockUnits.m) {
+        inheritM(ranges, currentRange)
+        // if (currentLockUnits.d || currentLockUnits.h) {
+        ranges = intersection(currentRange, ranges)
+        // }
+      } else {
+        if (currentLockUnits.d) inheritD(ranges, currentRange)
+        if (currentLockUnits.h) inheritH(ranges, currentRange)
+      }
+      resRanges.push(...ranges)
+    }
+    return { ranges: resRanges, lockUnits: ['m'] }
+  }
+}
+
+const divideM = (ranges) => {
+  const res = []
+
+  for (const range of ranges) {
+    const [l, r] = range
+    if (l.month() === r.month()) {
+      res.push(range)
+      continue
+    }
+    if (l.month() === 0 && l.date() === 1 && r.month() === 11 && r.date() === 31) {
+      res.push(range)
+      continue
+    }
+
+    if (l.year() !== r.year()) {
+      res.push(range)
+      continue
+    }
+
+    for (let m = l.month(); m <= r.month(); m++) {
+      res.push([
+        l.clone().set('month', m).startOf('month'),
+        l.clone().set('month', m).endOf('month')
+      ])
+    }
+  }
+  return res
+}
+
 const inheritY = (ranges, currentRange) => {
   for (let i = 0; i < ranges.length; i++) {
     ranges[i][0] = ranges[i][0].set('year', currentRange[0].year())
@@ -35,7 +91,7 @@ const inheritH = (ranges, currentRange) => {
 
 // TODO: 両端のyearが異なる場合の処理
 // Y,D固定でMを展開する
-const extendsM = (ranges, finestUnit, useLastMonthOfYear) => {
+const expandM = (ranges, finestUnit, useLastMonthOfYear) => {
   const res = []
   for (const range of ranges) {
     const [l, r] = range
@@ -51,7 +107,7 @@ const extendsM = (ranges, finestUnit, useLastMonthOfYear) => {
 }
 
 // M,H固定でDを展開する
-const extendsD = (ranges, finestUnit, useLastDateOfMonth = false) => {
+const expandD = (ranges, finestUnit, useLastDateOfMonth = false) => {
   const res = []
   for (const range of ranges) {
     const [l, r] = range
@@ -115,6 +171,7 @@ const basicMutations = [
       if (currentLockUnits.d) return emptyRanges()
       const date = parseInt(matched[1])
       const resRanges = []
+      currentRanges = divideM(currentRanges)
       for (const currentRange of currentRanges) {
         let ranges = [[
           currentRange[0].clone().date(date).startOf('date'),
@@ -124,7 +181,7 @@ const basicMutations = [
           inheritM(ranges, currentRange)
         } else {
           if (currentLockUnits.y) {
-            ranges = extendsM(ranges, 'date')
+            ranges = expandM(ranges, 'date')
           }
         }
         if (currentLockUnits.h) inheritH(ranges, currentRange)
@@ -139,6 +196,9 @@ const basicMutations = [
       if (currentLockUnits.h) return emptyRanges()
       const hour = parseInt(matched[1])
       const resRanges = []
+      if (currentLockUnits.m) {
+        currentRanges = divideM(currentRanges)
+      }
       for (const currentRange of currentRanges) {
         let ranges = [[
           currentRange[0].clone().hour(hour).startOf('hour'),
@@ -148,10 +208,10 @@ const basicMutations = [
           inheritD(ranges, currentRange)
         } else {
           if (currentLockUnits.m) {
-            ranges = extendsD(ranges, 'hour')
+            ranges = expandD(ranges, 'hour')
           } else if (currentLockUnits.y) {
-            ranges = extendsM(ranges, 'hour', true)
-            ranges = extendsD(ranges, 'hour', true)
+            ranges = expandM(ranges, 'hour', true)
+            ranges = expandD(ranges, 'hour', true)
           }
         }
         resRanges.push(...ranges)
@@ -176,24 +236,30 @@ const basicMutations = [
       return { ranges: resRanges, lockUnits: ['m', 'd'] }
     }
   ],
+  // [
+  //   /(春)/,
+  //   function (matched, currentRanges, currentLockUnits) {
+  //     const resRanges = []
+  //     for (const currentRange of currentRanges) {
+  //       let ranges = [[
+  //         currentRange[0].clone().month(2).startOf('month'), // 3月
+  //         currentRange[1].clone().month(4).endOf('month') // 5月
+  //       ]]
+  //       if (currentLockUnits.y) inheritY(ranges, currentRange)
+  //       if (currentLockUnits.m || currentLockUnits.d || currentLockUnits.h) {
+  //         ranges = intersection(currentRange, ranges)
+  //       }
+  //       resRanges.push(...ranges)
+  //     }
+  //     return { ranges: resRanges, lockUnits: ['m'] }
+  //   }
+  // ],
   [
-    /(春)/,
-    function (matched, currentRanges, currentLockUnits) {
-      const resRanges = []
-      for (const currentRange of currentRanges) {
-        let ranges = [[
-          currentRange[0].clone().month(2).startOf('month'), // 3月
-          currentRange[1].clone().month(4).endOf('month') // 5月
-        ]]
-        if (currentLockUnits.y) inheritY(ranges, currentRange)
-        if (currentLockUnits.m || currentLockUnits.d || currentLockUnits.h) {
-          ranges = intersection(currentRange, ranges)
-        }
-        resRanges.push(...ranges)
-      }
-      return { ranges: resRanges, lockUnits: ['m'] }
-    }
+    /(夏休み)/,
+    function (matched, currentRanges, currentLockUnits) { }
   ]
+  [/(春)/, season({ m: [3, 5] })],
+  [/(夏)/, season({ m: [6, 8] })]
 ]
 
 const intersection = (baseRange, targetRanges) => {
@@ -209,20 +275,8 @@ const intersection = (baseRange, targetRanges) => {
     seedRange = [interRange.start, interRange.end]
   }
   return [seedRange]
-  // const range1 = moment.range(lr1[0], lr1[1])
-  // const range2 = moment.range(lr2[0], lr2[1])
-  // const interRange = range1.intersect(range2)
-  // if (!interRange || !interRange.start || !interRange.end) return []
-  // return [interRange.start, interRange.end]
 }
 
 module.exports = {
   basicMutations
 }
-
-// note
-// const myRanges = [rangeY(parseInt(matched[1]))]
-// currentRange = moment.range(currentRange[0], currentRange[1])
-// for (const myRange of myRanges) {
-//   debug(currentRange),
-// }
