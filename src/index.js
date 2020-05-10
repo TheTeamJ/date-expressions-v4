@@ -36,6 +36,7 @@ class DateExpressions {
       d: false,
       h: false
     }
+    this._currentRangeStrs = []
     this.base = clone(this._currentRanges)[0]
     this.unhandledExpression = this.rawExpression
   }
@@ -48,6 +49,21 @@ class DateExpressions {
     return this._currentRanges
   }
 
+  addToCurrentRanges (ranges) {
+    this._currentRanges = []
+    this._currentRangeStrs = []
+    const fmt = 'YYYYMMDDHHmm'
+
+    for (const [l, r] of ranges) {
+      if (!l || !r) continue
+      const rangeStr = `${l.clone().format(fmt)}_${r.clone().format(fmt)}`
+      if (!this._currentRangeStrs.includes(rangeStr)) {
+        this._currentRangeStrs.push(rangeStr)
+        this._currentRanges.push([l, r])
+      }
+    }
+  }
+
   resolve () {
     this.initialize()
     const { actions, unhandledExpression } = divideIntoActions(this.rawExpression, DateExpressions.customMutations)
@@ -58,17 +74,19 @@ class DateExpressions {
       const matched = whole.match(mutation.regexp)
       const res = mutation.func(
         matched, cloneDeep(this._currentRanges), cloneDeep(this._currentLockUnits), cloneDeep(this.base))
-      // currentLockUnitsを更新
-      for (const unit of Object.keys(this._currentLockUnits)) {
-        if (res.lockUnits.includes(unit)) this._currentLockUnits[unit] = true
+      // 結果が存在するとき、currentLockUnitsを更新
+      if (res.ranges.length > 0) {
+        for (const unit of Object.keys(this._currentLockUnits)) {
+          if (res.lockUnits.includes(unit)) this._currentLockUnits[unit] = true
+        }
       }
-      // debug("!!", this._currentLockUnits)
       // newRanges.push(...res.ranges)
-      this._currentRanges = [...res.ranges]
+
+      // this._currentRanges = [...res.ranges]
+      this.addToCurrentRanges(res.ranges)
     }
     // currentRangesを更新
     // this._currentRanges = [...newRanges]
-    // debug("!!", this._currentRanges)
     return this
   }
 }

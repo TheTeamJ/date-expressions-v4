@@ -9,6 +9,10 @@ const getDayRange = (start, tz) => {
   ]
 }
 
+const emptyRanges = () => {
+  return { ranges: [] }
+}
+
 const format = (ranges, formatForm, tz) => {
   const res = []
   for (const range of ranges) {
@@ -28,4 +32,4 @@ const clone = momentRanges => {
   return res
 }
 
-module.exports = { debug, getDayRange, format, clone }
+module.exports = { debug, getDayRange, emptyRanges, format, clone }
