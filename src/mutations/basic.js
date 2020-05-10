@@ -34,7 +34,7 @@ const mRange = ({ m }) => {
 const hRange = ({ h }) => {
   return function (matched, currentRanges, currentLockUnits) {
     const resRanges = []
-    if (currentLockUnits.m) {
+    if (currentLockUnits.m) { // この条件部いるのかな？
       currentRanges = divideD(divideM(currentRanges))
     }
     for (const currentRange of currentRanges) {
@@ -43,8 +43,22 @@ const hRange = ({ h }) => {
         currentRange[1].clone().hour(h[1]).endOf('hour')
       ]]
       if (currentLockUnits.y) inheritY(ranges, currentRange)
-      if (currentLockUnits.m) inheritM(ranges, currentRange)
-      if (currentLockUnits.d) inheritD(ranges, currentRange)
+
+      if (currentLockUnits.m) {
+        inheritM(ranges, currentRange)
+      } else {
+        if (currentLockUnits.y) {
+          ranges = expandM(ranges, 'minute', true)
+        }
+      }
+
+      if (currentLockUnits.d) {
+        inheritD(ranges, currentRange)
+      } else {
+        if (currentLockUnits.y && !currentLockUnits.m) {
+          ranges = expandD(ranges, 'minute', true)
+        }
+      }
       if (currentLockUnits.h) {
         ranges = intersection(currentRange, ranges)
       }
@@ -91,8 +105,10 @@ const expandM = (ranges, finestUnit, useLastMonthOfYear) => {
     const vEnd = useLastMonthOfYear ? 11 : r.month()
     for (let v = l.month(); v <= vEnd; v++) {
       res.push([
-        l.clone().set('month', v).startOf(finestUnit),
-        l.clone().set('month', v).endOf(finestUnit)
+        l.clone().set('month', v).set('hour', l.hour()).startOf(finestUnit),
+        l.clone().set('month', v).set('hour', r.hour()).set('minute', 59).endOf(finestUnit)
+        // l.clone().set('month', v).startOf(finestUnit),
+        // l.clone().set('month', v).endOf(finestUnit)
       ])
     }
   }
@@ -107,8 +123,10 @@ const expandD = (ranges, finestUnit, useLastDateOfMonth = false) => {
     const vEnd = useLastDateOfMonth ? l.clone().endOf('month').date() : r.date()
     for (let v = l.date(); v <= vEnd; v++) {
       res.push([
-        l.clone().set('date', v).startOf(finestUnit),
-        l.clone().set('date', v).endOf(finestUnit)
+        l.clone().set('date', v).set('hour', l.hour()).startOf(finestUnit),
+        l.clone().set('date', v).set('hour', r.hour()).set('minute', 59).endOf(finestUnit)
+        // l.clone().set('date', v).startOf(finestUnit),
+        // l.clone().set('date', v).endOf(finestUnit)
       ])
     }
   }

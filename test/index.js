@@ -119,6 +119,7 @@ describe('Resolve date ranges', function () {
     testRanges('2000年/4月/午前', expandD({ y: '2000', m: '04', h: ['00', '11'] }))
     testRanges('6日/午前', [['2020/05/06 00:00', '2020/05/06 11:59']])
     testRanges('6日/午前/10時', [['2020/05/06 10:00', '2020/05/06 10:59']])
+    testRanges('1990年/午後', expandMD({ y: 1990, h: ['12', '23'] }))
   })
 
   it('fixed day: month and day', function () {
