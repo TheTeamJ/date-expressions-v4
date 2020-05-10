@@ -1,5 +1,7 @@
+const { cloneDeep } = require('lodash')
 const moment = require('moment-timezone')
-const { getDayRange, format } = require('./lib')
+const { divideIntoActions } = require('./actions')
+const { debug, getDayRange, format, clone } = require('./lib')
 
 class DateExpressions {
   static customMutations = []
@@ -12,7 +14,7 @@ class DateExpressions {
   }
 
   static getInitialState () {
-    const initialState = DateExpressions._initialState
+    const initialState = clone(DateExpressions._initialState)
     if (initialState.length > 0) return initialState
     return [getDayRange(null, DateExpressions.timezone)]
   }
@@ -27,12 +29,47 @@ class DateExpressions {
   }
 
   initialize () {
+    this._currentRanges = DateExpressions.getInitialState()
+    this._currentLockUnits = {
+      y: false,
+      m: false,
+      d: false,
+      h: false
+    }
+    this.base = clone(this._currentRanges)[0]
     this.unhandledExpression = this.rawExpression
-    this.momentRanges = []
   }
 
   get dateRanges () {
     return toDate(this.momentRanges)
+  }
+
+  get momentRanges () {
+    return this._currentRanges
+  }
+
+  resolve () {
+    this.initialize()
+    const { actions, unhandledExpression } = divideIntoActions(this.rawExpression, DateExpressions.customMutations)
+    const newRanges = []
+    // currentRangesに対してactionsを順に作用させ、currentRangesを更新する
+    for (const action of actions) {
+      const { whole, mutation } = action
+      const matched = whole.match(mutation.regexp)
+      const res = mutation.func(
+        matched, cloneDeep(this._currentRanges), cloneDeep(this._currentLockUnits), cloneDeep(this.base))
+      // currentLockUnitsを更新
+      for (const unit of Object.keys(this._currentLockUnits)) {
+        if (res.lockUnits.includes(unit)) this._currentLockUnits[unit] = true
+      }
+      // debug("!!", this._currentLockUnits)
+      // newRanges.push(...res.ranges)
+      this._currentRanges = [...res.ranges]
+    }
+    // currentRangesを更新
+    // this._currentRanges = [...newRanges]
+    // debug("!!", this._currentRanges)
+    return this
   }
 }
 

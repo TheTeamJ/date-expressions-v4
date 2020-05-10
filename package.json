@@ -6,12 +6,13 @@
   "scripts": {
     "test": "run-s test:*",
     "test:standard": "standard",
-    "test:mocha": "mocha test/*.js"
+    "test:mocha": "DEBUG=DateExp mocha test/*.js"
   },
   "author": "daiiz",
   "license": "MIT",
   "dependencies": {
     "debug": "^4.1.1",
+    "lodash": "^4.17.15",
     "moment-range": "^4.0.2",
     "moment-timezone": "^0.5.28"
   },
