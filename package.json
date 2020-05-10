@@ -1,0 +1,16 @@
+{
+  "name": "@daiiz/date-expressions",
+  "version": "1.0.0",
+  "description": "https://scrapbox.io/teamj/date-expressions_(v4)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "daiiz",
+  "license": "MIT",
+  "dependencies": {
+    "debug": "^4.1.1",
+    "moment-range": "^4.0.2",
+    "moment-timezone": "^0.5.28"
+  }
+}
