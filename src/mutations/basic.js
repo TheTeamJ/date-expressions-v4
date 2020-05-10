@@ -4,8 +4,6 @@ const moment = MomentRange.extendMoment(Moment)
 const { divideM, divideD } = require('./dvide')
 const { debug, emptyRanges } = require('../lib')
 
-const tz = 'Asia/Tokyo'
-
 const mRange = ({ m }) => {
   return function (matched, currentRanges, currentLockUnits) {
     const resRanges = []
@@ -30,6 +28,29 @@ const mRange = ({ m }) => {
       resRanges.push(...ranges)
     }
     return { ranges: resRanges, lockUnits: ['m'] }
+  }
+}
+
+const hRange = ({ h }) => {
+  return function (matched, currentRanges, currentLockUnits) {
+    const resRanges = []
+    if (currentLockUnits.m) {
+      currentRanges = divideD(divideM(currentRanges))
+    }
+    for (const currentRange of currentRanges) {
+      let ranges = [[
+        currentRange[0].clone().hour(h[0]).startOf('hour'),
+        currentRange[1].clone().hour(h[1]).endOf('hour')
+      ]]
+      if (currentLockUnits.y) inheritY(ranges, currentRange)
+      if (currentLockUnits.m) inheritM(ranges, currentRange)
+      if (currentLockUnits.d) inheritD(ranges, currentRange)
+      if (currentLockUnits.h) {
+        ranges = intersection(currentRange, ranges)
+      }
+      resRanges.push(...ranges)
+    }
+    return { ranges: resRanges, lockUnits: ['h'] }
   }
 }
 
@@ -182,7 +203,7 @@ const basicMutations = [
   [
     /(\d{1,2})時/,
     function (matched, currentRanges, currentLockUnits) {
-      if (currentLockUnits.h) return emptyRanges()
+      // if (currentLockUnits.h) return emptyRanges()
       const hour = parseInt(matched[1])
       const resRanges = []
       if (currentLockUnits.m) {
@@ -203,6 +224,9 @@ const basicMutations = [
             ranges = expandM(ranges, 'hour', true)
             ranges = expandD(ranges, 'hour', true)
           }
+        }
+        if (currentLockUnits.h) {
+          ranges = intersection(currentRange, ranges)
         }
         resRanges.push(...ranges)
       }
@@ -283,6 +307,8 @@ const basicMutations = [
       return { ranges: resRanges, lockUnits: ['y', 'm', 'd'] }
     }
   ],
+  [/(午前中|午前)/, hRange({ h: [0, 11] })],
+  [/(午後)/, hRange({ h: [12, 23] })],
   [/(春)/, mRange({ m: [3, 5] })],
   [/(夏)/, mRange({ m: [6, 8] })]
 ]

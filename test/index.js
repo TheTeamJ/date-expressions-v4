@@ -114,6 +114,13 @@ describe('Resolve date ranges', function () {
     // testRanges('15時/春', []) divideD?
   })
 
+  it('hRange', function () {
+    testRanges('午前', [['2020/05/10 00:00', '2020/05/10 11:59']])
+    testRanges('2000年/4月/午前', expandD({ y: '2000', m: '04', h: ['00', '11'] }))
+    testRanges('6日/午前', [['2020/05/06 00:00', '2020/05/06 11:59']])
+    testRanges('6日/午前/10時', [['2020/05/06 10:00', '2020/05/06 10:59']])
+  })
+
   it('fixed day: month and day', function () {
     // 単数
     testRanges('元旦', [['2020/01/01 00:00', '2020/01/01 23:59']])
@@ -157,11 +164,19 @@ describe('Resolve date ranges', function () {
       ...expandD({ y: '2015', m: '08', h: '13', start: 10, end: 31 }),
       ...expandD({ y: '2015', m: '09', h: '13', start: 1, end: 4 })
     ])
+    testRanges('インターンシップ/午後', [
+      ...expandD({ y: '2015', m: '08', h: ['12', '23'], start: 10, end: 31 }),
+      ...expandD({ y: '2015', m: '09', h: ['12', '23'], start: 1, end: 4 }),
+      ...expandD({ y: '2017', m: '08', h: ['12', '23'], start: 14, end: 31 }),
+      ...expandD({ y: '2017', m: '09', h: ['12', '23'], start: 1, end: 29 })
+    ])
   })
 
   it('should return empty range', function () {
     testRanges('2月/元旦', [])
     testRanges('春/7月', [])
+    testRanges('6日/午前中/13時', [])
+    testRanges('午前/午後', [])
     testRanges('9月/ハッピーデー', [])
     testRanges('2000年/インターンシップ', [])
   })

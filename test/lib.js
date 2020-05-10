@@ -21,13 +21,19 @@ const getLastDate = ({ y, m }) => {
 }
 
 const expandD = ({ y, m, h, start, end }) => {
+  let lH = h
+  let rH = h
+  if (Array.isArray(h)) {
+    lH = h[0]
+    rH = h[1]
+  }
   const res = []
   const lastDate = getLastDate({ y, m })
   for (let j = (start || 1); j <= (end || lastDate); j++) {
     const strD = `${j}`.padStart(2, '0')
     const range = [
-      `${y}/${m}/${strD} ${h}:00`,
-      `${y}/${m}/${strD} ${h}:59`
+      `${y}/${m}/${strD} ${lH}:00`,
+      `${y}/${m}/${strD} ${rH}:59`
     ]
     res.push(range)
   }
