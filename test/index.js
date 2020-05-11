@@ -22,6 +22,15 @@ describe('Check static variables', function () {
   })
 })
 
+describe('Check', function () {
+  it('Ok', function () {
+    // testRanges('15日/夏/インターンシップ/8月', [])
+    testRanges('B3/夏/インターンシップ', [['2015/08/10 00:00', '2015/08/31 23:59']])
+    testRanges('夏/B3/インターンシップ', [['2015/08/10 00:00', '2015/08/31 23:59']])
+    testRanges('インターンシップ/夏', [])
+  })
+})
+return
 describe('Resolve date ranges', function () {
   it('customMutations is empty', function () {
     assert.isEmpty(DateExp.customMutations)
@@ -142,6 +151,8 @@ describe('Resolve date ranges', function () {
       ['2020/08/08 00:00', '2020/08/08 23:59'],
       ['2020/11/11 00:00', '2020/11/11 23:59']
     ])
+    testRanges('夏/ハッピーデー', [['2020/08/08 00:00', '2020/08/08 23:59']])
+    testRanges('ハッピーデー/夏', [['2020/08/08 00:00', '2020/08/08 23:59']])
     testRanges('2015年/ハッピーデー', [
       ['2015/08/08 00:00', '2015/08/08 23:59'],
       ['2015/11/11 00:00', '2015/11/11 23:59']

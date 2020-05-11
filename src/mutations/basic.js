@@ -18,15 +18,21 @@ const mRange = ({ m }) => {
       if (currentLockUnits.h) {
         ranges = divideD(ranges)
       }
-      if (currentLockUnits.y) inheritY(ranges, currentRange)
+      // if (currentLockUnits.y) inheritY(ranges, currentRange)
+      // if (currentLockUnits.m) {
+      //   inheritM(ranges, currentRange)
+      //   // if (currentLockUnits.d || currentLockUnits.h) {
+      //   ranges = intersection(currentRange, ranges)
+      //   // }
+      // } else {
+        // if (currentLockUnits.d) inheritD(ranges, currentRange)
+        // if (currentLockUnits.h) inheritH(ranges, currentRange)
+      // }
+      if (currentLockUnits.d) inheritD(ranges, currentRange)
+      if (currentLockUnits.h) inheritH(ranges, currentRange)
       if (currentLockUnits.m) {
-        inheritM(ranges, currentRange)
-        // if (currentLockUnits.d || currentLockUnits.h) {
+        debug('>>>>', currentRange, ranges)
         ranges = intersection(currentRange, ranges)
-        // }
-      } else {
-        if (currentLockUnits.d) inheritD(ranges, currentRange)
-        if (currentLockUnits.h) inheritH(ranges, currentRange)
       }
       resRanges.push(...ranges)
     }
@@ -316,6 +322,29 @@ const basicMutations = [
           // 2017/08/14 ~ 2017/09/29
           currentRange[0].clone().year(2017).month(7).date(14).startOf('date'),
           currentRange[1].clone().year(2017).month(8).date(29).endOf('date')
+        ]]
+        if (currentLockUnits.h) inheritH(ranges, currentRange)
+        if (currentLockUnits.y || currentLockUnits.m || currentLockUnits.d) {
+          ranges = intersection(currentRange, ranges)
+        }
+        resRanges.push(...ranges)
+      }
+      return { ranges: resRanges, lockUnits: ['y', 'm', 'd'] }
+    }
+  ],
+  [
+    /(B3)/,
+    function (matched, currentRanges, currentLockUnits) {
+      const resRanges = []
+      if (!currentLockUnits.y) {
+        currentRanges = expandY(currentRanges, detectFinestUnit(currentLockUnits), [2015, 2015])
+      }
+      if (currentLockUnits.m) currentRanges = divideM(currentRanges)
+      for (const currentRange of currentRanges) {
+        let ranges = [[
+          // 2015/04/01 ~ 2016/03/31
+          currentRange[0].clone().year(2015).month(3).date(1).startOf('date'),
+          currentRange[0].clone().year(2015).month(11).date(31).endOf('date') // 年またぎはあとで検証
         ]]
         if (currentLockUnits.h) inheritH(ranges, currentRange)
         if (currentLockUnits.y || currentLockUnits.m || currentLockUnits.d) {
