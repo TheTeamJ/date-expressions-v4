@@ -9,7 +9,8 @@ const sample = [
   // basicMutations['(11日)'],
   // basicMutations['(夏)'],
   // basicMutations['(今月)']
-  basicMutations['(インターン)']
+  basicMutations['(インターン)'],
+  basicMutations['(B3)']
 ]
 // debug(sample)
 
