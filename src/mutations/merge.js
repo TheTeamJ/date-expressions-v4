@@ -64,6 +64,7 @@ const fixMutationUnits = combedMutations => {
       switch (value) {
         case 'I':
         case 'i': {
+          // 強いIか弱いiに応じて条件が異なる
           const cond = value === 'i'
             ? absNumsArrayUnits.has(unit) || fillUnits.has(unit)
             : absNumsArrayUnits.has(unit)
@@ -127,7 +128,6 @@ const fixMutationUnits = combedMutations => {
 
 // mutationGroup: [[{}, {}], [{}], ...]
 const mergeMutations = mutationGroup => {
-  const res = []
   let combinations = [mutationGroup[0]] // [{}, ...]
   for (let i = 1; i < mutationGroup.length; i++) {
     const newCombinations = []
@@ -136,8 +136,9 @@ const mergeMutations = mutationGroup => {
     }
     combinations = newCombinations
   }
+  const res = []
   for (const combination of combinations) {
-    fixMutationUnits(combination)
+    res.push(fixMutationUnits(combination))
   }
   return res
 }
