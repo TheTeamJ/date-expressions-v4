@@ -1,5 +1,6 @@
+const { cloneDeep } = require('lodash')
 const moment = require('moment-timezone')
-const { debug } = require('../../src0/lib')
+const { debug } = require('../../src/lib')
 
 const now = moment.tz('Asia/Tokyo')
 const base = { y: now.year(), m: now.month() + 1, d: now.date(), h: now.hour() }
@@ -21,7 +22,6 @@ const fmt = mutation => {
       }
     }
   }
-  debug(mutation)
   return mutation
 }
 
@@ -39,10 +39,12 @@ const createMutaion = (mut, defaultValue) => {
 // weak inherit
 // 絶対表現に用いる型
 const a = mutations => {
+  if (!Array.isArray(mutations)) mutations = [mutations]
   const res = []
   for (const mut of mutations) {
     const mutation = fmt(createMutaion(mut, 'i'))
     mutation._kind = 'a'
+    mutation._base = cloneDeep(base)
     res.push(mutation)
   }
   return res
@@ -51,10 +53,12 @@ const a = mutations => {
 // strong inherit
 // 相対表現に用いる型
 const r = mutations => {
+  if (!Array.isArray(mutations)) mutations = [mutations]
   const res = []
   for (const mut of mutations) {
     const mutation = fmt(createMutaion(mut, 'I'))
     mutation._kind = 'r'
+    mutation._base = cloneDeep(base)
     res.push(mutation)
   }
   return res
