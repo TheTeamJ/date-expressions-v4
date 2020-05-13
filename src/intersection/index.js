@@ -43,7 +43,7 @@ const convertToMomentRange = (mutation, timezone) => {
           start.hour(lr[0])
           end.hour(lr[1])
         }
-        start.endOf('hour')
+        start.startOf('hour')
         end.endOf('hour')
         break
       }
@@ -63,11 +63,11 @@ const intersectMomentRange = ranges => {
   return interRange
 }
 
-const intersect = mutationGroup => {
+const _intersect = mutationGroup => {
   const res = []
   for (const mutations of mutationGroup) {
-    // TODO: 1回以上hに数値配列が与えられている場合は、dayレベルに分解してから共通部分をとる
-    // TODO: mとばしの場合も同様
+    // TODO: 1回以上そのunitに数値配列が与えられている場合は、fをexpandしてから共通部分をとるべき
+    // ぜんぶfならそのままでかまわない
     // TODO: いわゆるfのexpand
     const ranges = []
     for (const mutation of mutations) {
@@ -82,6 +82,18 @@ const intersect = mutationGroup => {
   return res
 }
 
+const intersect = momentRangesGroup => {
+  const res = []
+  for (const ranges of momentRangesGroup) {
+    console.log("###", ranges)
+    const interRange = intersectMomentRange(ranges)
+    if (interRange) res.push(interRange)
+  }
+  console.log('intersections:', res)
+  return res
+}
+
 module.exports = {
-  intersect
+  intersect,
+  convertToMomentRange
 }

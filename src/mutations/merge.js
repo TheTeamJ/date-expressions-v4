@@ -1,5 +1,5 @@
 const { cloneDeep } = require('lodash')
-const { debug } = require('../lib')
+const { isAbsNumsArray, isRelNumsArray, debug } = require('../lib')
 
 // setA: [1, 2], setB: [3, 4] -> [[1, 2, 3], [1, 2, 4]]
 const setCrtesian = (setA, setB) => {
@@ -17,16 +17,6 @@ const setCrtesian = (setA, setB) => {
 }
 
 // console.log('>>>', setCrtesian([1], [2, 3]))
-
-const isAbsNumsArray = value => {
-  if (!Array.isArray(value)) return false
-  return value.every(v => Number.isInteger(v))
-}
-
-const isRelNumsArray = value => {
-  if (!Array.isArray(value)) return false
-  return value.every(v => `${v}`.startsWith('+') || `${v}`.startsWith('-'))
-}
 
 // 数値配列, f, i, I の力比べなどを行いmutationsを確定する
 // XXX: ひとまずkind=aのみを受け取る前提で考える
@@ -122,7 +112,7 @@ const fixMutationUnits = combedMutations => {
 
   // debug(combedMutations)
   // debug({ absNumsArrayUnits, relNumsArrayUnits, fillUnits })
-  debug(candidates)
+  // debug(candidates)
   return candidates
 }
 
