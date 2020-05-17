@@ -2,7 +2,7 @@
 const { testRanges, expandD, expandMD } = require('./lib')
 const { y2015mFd11, y2015mFd11h15 } = require('./const')
 
-const runLateTest = true
+const runLateTest = false
 
 describe('Resolve absolute date ranges', function () {
   it('basic mono', function () {
@@ -59,6 +59,7 @@ describe('Resolve absolute date ranges', function () {
 
   it('mRange: fixed month range', function () {
     testRanges('冬', [['2020/12/01 00:00', '2021/02/28 23:59']])
+    testRanges('冬/JSConf/午前/9時', [['2019/12/01 09:00', '2019/12/01 09:59']])
     testRanges('春', [['2020/03/01 00:00', '2020/05/31 23:59']])
     testRanges('春/4月', [['2020/04/01 00:00', '2020/04/30 23:59']])
     testRanges('2015/春', [['2015/03/01 00:00', '2015/05/31 23:59']])
