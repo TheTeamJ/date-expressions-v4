@@ -19,7 +19,19 @@ const basicMutations = {
   '(秋)': a([{ m: [9, 11], d: 'f', h: 'f' }]),
   '(冬)': a([{ y: ['+0', '+1'], m: [12, 2], d: 'f', h: 'f' }]),
   '(今日)': a({ m: 'I', d: [10], h: 'f' }), // 「今日」は5月10日としてシミュレート
-  '(今月)': a({ m: [5], d: 'f', h: 'f' }), // 「今月」は5月としてシミュレート
+  '(今月)': (_, base) => {
+    const m = base.month() + 1
+    return a({ m: [m], d: 'f', h: 'f' })
+  },
+  '(先月)': (_, base) => {
+    const lastMonth = base.clone().add(-1, 'month')
+    const m = lastMonth.month() + 1
+    if (lastMonth.year() === base.year()) {
+      return a({ m: [m], d: 'f', h: 'f' })
+    } else {
+      return a({ y: ['-1'], m: [m], d: 'f', h: 'f' })
+    }
+  },
   '(インターン)': a([
     { y: [2015], m: [8, 9], d: [10, 4], h: 'f' },
     { y: [2017], m: [8, 9], d: [14, 29], h: 'f' }

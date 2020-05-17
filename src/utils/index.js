@@ -2,7 +2,6 @@ const { sortBy } = require('lodash')
 const moment = require('moment-timezone')
 const { basicMutations } = require('../mutations/basics')
 const now = moment.tz('Asia/Tokyo')
-const base = { y: now.year(), m: now.month() + 1, d: now.date(), h: now.hour() }
 
 const parse = (expression, splitter = '/') => {
   const patternTexts = Object.keys(basicMutations)
@@ -19,7 +18,7 @@ const parse = (expression, splitter = '/') => {
       whole
     }
     if (typeof action.mutations === 'function') {
-      action.mutations = action.mutations(matched, base)
+      action.mutations = action.mutations(matched, now.clone())
     }
     expression = expression.replace(whole, '*'.repeat(whole.length))
     res.push(action)
