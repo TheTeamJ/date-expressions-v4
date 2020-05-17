@@ -68,7 +68,8 @@ const createGroup = ranges => {
       addToRes()
     }
   }
-  console.log(">>>", res)
+
+  return res
 }
 
 const intersect = mutationGroup => {
@@ -82,9 +83,9 @@ const intersect = mutationGroup => {
     }
     orRes = cloneDeep(newRes)
   }
-  // 不自然な挙動の調査時はここを確認
+  // 挙動が不安定な場合はここを確認
   // console.log("##", orRes)
-  createGroup(orRes)
+  return createGroup(orRes)
 }
 
 module.exports = {

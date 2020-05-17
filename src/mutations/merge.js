@@ -4,19 +4,13 @@ const { isAbsNumsArray, isRelNumsArray, debug } = require('../lib')
 // setA: [1, 2], setB: [3, 4] -> [[1, 2, 3], [1, 2, 4]]
 const setCrtesian = (setA, setB) => {
   const result = []
-  // for (let i = 0; i < setA.length; i++) {
-    // const res = []
   for (let j = 0; j < setB.length; j++) {
     const res = cloneDeep(setA)
     res.push(setB[j])
     result.push(res)
   }
-    // result.push(res)
-  // }
   return result
 }
-
-// console.log('>>>', setCrtesian([1], [2, 3]))
 
 // 数値配列, f, i, I の力比べなどを行いmutationsを確定する
 // XXX: ひとまずkind=aのみを受け取る前提で考える
@@ -49,6 +43,12 @@ const fixMutationUnits = combedMutations => {
   const candidates = []
   for (const mut of combedMutations) {
     const newMut = cloneDeep(mut)
+    // 複数個に展開されるケースもある
+    // const newMuts = []
+    // 変容完了の合図として削除する
+    delete newMut._base
+    delete newMut._kind
+
     for (const unit of units) {
       const value = mut[unit]
       switch (value) {
@@ -61,12 +61,15 @@ const fixMutationUnits = combedMutations => {
           if (cond) {
             // 少々広くなるが、後にintersectionをとるだけなので大丈夫だと思う
             if (unit === 'y') {
-              // mが具体的に指定されている場合は年またぎしない
-              // XXX: 年またぎを解消してからこの関数に入ってきてほしい？
-              newMut[unit] = [minYear, isAbsNumsArray(mut.m) ? minYear : maxYear]
-              if (isRelNumsArray(value)) {
-                newMut[unit][0] += parseInt(value[0])
-                newMut[unit][1] += parseInt(value[1])
+              // mが具体的に指定されている場合は年またぎしたくない
+              if (isAbsNumsArray(mut.m)) {
+                // valueをそのまま残す
+              } else {
+                newMut[unit] = [minYear, maxYear]
+                if (isRelNumsArray(value)) {
+                  newMut[unit][0] += parseInt(value[0])
+                  newMut[unit][1] += parseInt(value[1])
+                }
               }
             } else {
               newMut[unit] = 'f'
@@ -106,16 +109,14 @@ const fixMutationUnits = combedMutations => {
         }
       }
     }
-    // 変容完了の合図として削除する
-    delete newMut._base
-    delete newMut._kind
     candidates.push(newMut)
   }
 
-  // debug(combedMutations)
-  // debug({ absNumsArrayUnits, relNumsArrayUnits, fillUnits })
-  // debug(candidates)
-  return candidates
+  return {
+    resolved: candidates.filter(mut => isAbsNumsArray(mut.y)),
+    unresolved: candidates.filter(mut => !isAbsNumsArray(mut.y)),
+    yearRange: [minYear, maxYear]
+  }
 }
 
 // mutationGroup: [[{}, {}], [{}], ...]
@@ -130,7 +131,21 @@ const mergeMutations = mutationGroup => {
   }
   const res = []
   for (const combination of combinations) {
-    res.push(fixMutationUnits(combination))
+    const { resolved, unresolved, yearRange } = fixMutationUnits(combination)
+    // unit「y」だけiを含む可能性がある
+    if (unresolved.length > 0) {
+      for (let y = yearRange[0]; y <= yearRange[1]; y++) {
+        const _resolved = cloneDeep(resolved)
+        for (let mut of unresolved) {
+          mut = cloneDeep(mut)
+          mut.y = [y, y]
+          _resolved.push(mut)
+        }
+        res.push(_resolved)
+      }
+    } else {
+      res.push(resolved)
+    }
   }
   return res
 }

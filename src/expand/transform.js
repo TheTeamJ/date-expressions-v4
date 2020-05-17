@@ -166,11 +166,9 @@ const transformMutaitons = (mutations, finestUnit) => {
   const subRes = []
   for (const mutation of mutations) {
     const newMutations = transformMutaiton(mutation, fillUnits)
-    // console.log(JSON.stringify(newMutations, null, 2))
-    // console.log(newMutations)
     subRes.push(newMutations)
   }
-  const interRange = intersect(subRes)
+  return intersect(subRes)
 }
 
 module.exports = {
