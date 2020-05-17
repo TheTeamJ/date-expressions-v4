@@ -1,3 +1,9 @@
+const Moment = require('moment-timezone')
+const MomentRange = require('moment-range')
+const moment = MomentRange.extendMoment(Moment)
+const { expandArray, getFillArray } = require('./lib')
+const tz = 'Asia/Tokyo'
+
 // y, m, d, h に関して、
 // fを数値配列で挟んでいる時、fに隣接する数値配列の大小関係は xL =< xR である
 // Valid
@@ -31,3 +37,129 @@
 // { y: [2015], m: f, d: [19, 20], h: [11, 13] } の読み方
 //   - 正: 2015/*/19 11:00 ~ 13:00, 2015/*/20 11:00 ~ 13:00
 //   - 誤: 2015/*/19 11:00 ~ 2015/*/20 13:00
+
+const detectFillUnits = finestUnit => {
+  switch (finestUnit) {
+    case 'h': return ['m', 'd']
+    case 'd': return ['m', 'd']
+    case 'm': return ['m']
+  }
+  return []
+}
+
+const expandM = mutation => {
+  const res = []
+  const { y, m } = mutation
+
+  if (m === 'f') {
+    const range = moment.range(
+      moment.tz(tz).year(y[0]).startOf('year'),
+      moment.tz(tz).year(y[1]).endOf('year')
+    )
+    // すべてのdateを受理してよい
+    for (const date of range.by('month')) {
+      const y = date.year()
+      const m = date.month()
+      res.push({ y: [y, y], m: [m + 1, m + 1], d: [1, date.endOf('month').date()], h: [0, 23] })
+    }
+    return res
+  } else {
+    const range = moment.range(
+      moment.tz(tz).year(y[0]).month(m[0]).startOf('month'),
+      moment.tz(tz).year(y[1]).month(m[1]).endOf('month')
+    )
+    for (const date of range.by('month')) {
+      const y = date.year()
+      const m = date.month()
+      res.push({ y: [y, y], m: [m + 1, m + 1], d: [1, date.endOf('month').date()], h: [0, 23] })
+    }
+    return res
+  }
+}
+
+const expandMD = mutation => {
+  const res = []
+  const { y, m, d, h } = mutation
+  const hours = (h === 'f') ? [0, 23] : h
+
+  if (m === 'f') {
+    const range = moment.range(
+      moment.tz(tz).year(y[0]).startOf('year'),
+      moment.tz(tz).year(y[1]).endOf('year')
+    )
+    const acceptMonths = getFillArray('m')
+    const acceptDays = (d === 'f') ? getFillArray('d') : expandArray(d)
+    // 一日ごとに見て、条件を満たすdateであるかを確認する
+    for (const date of range.by('day')) {
+      const y = date.year()
+      const m = date.month()
+      const d = date.date()
+      if (acceptMonths.includes(m) && acceptDays.includes(d)) {
+        res.push({ y: [y, y], m: [m + 1, m + 1], d: [d, d], h: hours })
+      }
+    }
+    return res
+  }
+
+  if (d === 'f') {
+    // mが固定されているケース
+    const range = moment.range(
+      moment.tz(tz).year(y[0]).month(m[0]).startOf('month'),
+      moment.tz(tz).year(y[1]).month(m[1]).endOf('month')
+    )
+    for (const date of range.by('day')) {
+      const y = date.year()
+      const m = date.month()
+      const d = date.date()
+      res.push({ y: [y, y], m: [m + 1, m + 1], d: [d, d], h: hours })
+    }
+    return res
+  } else {
+    // m,dともに固定されているケース
+    const range = moment.range(
+      moment.tz(tz).year(y[0]).month(m[0]).date(d[0]).startOf('day'),
+      moment.tz(tz).year(y[1]).month(m[1]).date(d[1]).endOf('day')
+    )
+    for (const date of range.by('day')) {
+      const y = date.year()
+      const m = date.month()
+      const d = date.date()
+      res.push({ y: [y, y], m: [m + 1, m + 1], d: [d, d], h: hours })
+    }
+    return res
+  }
+}
+
+// return mutation array
+const transformMutaiton = (mutation, fillUnits) => {
+  let res = [mutation]
+  if (fillUnits.includes('d')) {
+    res = expandMD(mutation)
+  } else if (fillUnits.includes('m')) {
+    res = expandM(mutation)
+  }
+  return res
+}
+
+// mutations: AND set
+const transformMutaitons = (mutations, finestUnit) => {
+  const fillUnits = detectFillUnits(finestUnit)
+  if (fillUnits.length === 0) return mutations
+  const subRes = []
+  for (const mutation of mutations) {
+    const newMutations = transformMutaiton(mutation, fillUnits)
+    console.log(JSON.stringify(newMutations, null, 2))
+    subRes.push(newMutations)
+  }
+  // const interRange = intersection(subRes)
+}
+
+module.exports = {
+  transformMutaitons
+}
+
+// transformMutaiton({ y: [2015, 2016], m: [11, 1], d: 'f', h: [12, 23] })
+// transformMutaiton({ y: [2015, 2016], m: [11, 1], d: [23, 4], h: [12, 23] }, ['m', 'd'])
+// transformMutaiton({ y: [2015, 2016], m: [11, 1], d: 'f', h: 'f' }, ['m'])
+// transformMutaitons([{ y: [2015, 2016], m: [11, 1], d: 'f', h: 'f' }], 'm')
+// transformMutaitons([{ y: [2015, 2015], m: [5, 5], d: 'f', h: [11] }], 'd')
