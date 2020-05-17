@@ -2,31 +2,31 @@ const Moment = require('moment-timezone')
 const MomentRange = require('moment-range')
 const moment = MomentRange.extendMoment(Moment)
 const { cloneDeep } = require('lodash')
+const { transformMutaitons } = require('./transform')
 const { isAbsNumsArray } = require('../lib')
 const { convertToMomentRange } = require('../intersection/')
 
 // ここから！！！
 // いまのところfになりうるのはm,dだけなので、場合分けを全部記述しても3通りしかない
-const transformMutaitons = (mutations, finestUnit) => {
-  for (const mutation of mutations) {
-    const { y, m, d, h } = mutation
-    const range = [
-      moment.tz('Asia/Tokyo').year(y[0]).month(0).date(1).startOf('date'),
-      moment.tz('Asia/Tokyo').year(y[1]).month(11).date(31).endOf('date')
-    ]
-    if (m !== 'f') {
-      // 連続的
-
-    }
-    console.log("#", range)
-  }
-}
+// const transformMutaitons = (mutations, finestUnit) => {
+//   for (const mutation of mutations) {
+//     const { y, m, d, h } = mutation
+//     const range = [
+//       moment.tz('Asia/Tokyo').year(y[0]).month(0).date(1).startOf('date'),
+//       moment.tz('Asia/Tokyo').year(y[1]).month(11).date(31).endOf('date')
+//     ]
+//     if (m !== 'f') {
+//       // 連続的
+//     }
+//     console.log("#", range)
+//   }
+// }
 
 // 一部のunitの扱いを離散的にする必要があるため、
 // 必要に応じて 'f' なunitを展開する
 // 1回以上数値配列が与えられたunitの 'f' が展開される
 const expandFillUnits = mutationGroup => {
-  const units = ['d', 'm'] // 現状、yearは展開できない
+  const units = ['h', 'd', 'm'] // 現状、yearは展開できない
   const newMutationGroup = []
   const ranges = []
   for (const mutations of mutationGroup) { // AND

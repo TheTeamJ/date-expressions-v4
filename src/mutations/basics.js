@@ -17,8 +17,6 @@ const basicMutations = {
   '(2ヶ月前)': r([{ m: 'I-2', d: 'f', h: 'f' }])
 }
 
-// console.log(basicMutations)
-
 module.exports = {
   basicMutations
 }

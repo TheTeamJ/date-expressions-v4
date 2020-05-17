@@ -65,8 +65,8 @@ const expandM = mutation => {
     return res
   } else {
     const range = moment.range(
-      moment.tz(tz).year(y[0]).month(m[0]).startOf('month'),
-      moment.tz(tz).year(y[1]).month(m[1]).endOf('month')
+      moment.tz(tz).year(y[0]).month(m[0] - 1).startOf('month'),
+      moment.tz(tz).year(y[1]).month(m[1] - 1).endOf('month')
     )
     for (const date of range.by('month')) {
       const y = date.year()
@@ -104,8 +104,8 @@ const expandMD = mutation => {
   if (d === 'f') {
     // mが固定されているケース
     const range = moment.range(
-      moment.tz(tz).year(y[0]).month(m[0]).startOf('month'),
-      moment.tz(tz).year(y[1]).month(m[1]).endOf('month')
+      moment.tz(tz).year(y[0]).month(m[0] - 1).startOf('month'),
+      moment.tz(tz).year(y[1]).month(m[1] - 1).endOf('month')
     )
     for (const date of range.by('day')) {
       const y = date.year()
@@ -117,8 +117,8 @@ const expandMD = mutation => {
   } else {
     // m,dともに固定されているケース
     const range = moment.range(
-      moment.tz(tz).year(y[0]).month(m[0]).date(d[0]).startOf('day'),
-      moment.tz(tz).year(y[1]).month(m[1]).date(d[1]).endOf('day')
+      moment.tz(tz).year(y[0]).month(m[0] - 1).date(d[0]).startOf('day'),
+      moment.tz(tz).year(y[1]).month(m[1] - 1).date(d[1]).endOf('day')
     )
     for (const date of range.by('day')) {
       const y = date.year()
@@ -148,7 +148,8 @@ const transformMutaitons = (mutations, finestUnit) => {
   const subRes = []
   for (const mutation of mutations) {
     const newMutations = transformMutaiton(mutation, fillUnits)
-    console.log(JSON.stringify(newMutations, null, 2))
+    // console.log(JSON.stringify(newMutations, null, 2))
+    console.log(newMutations)
     subRes.push(newMutations)
   }
   // const interRange = intersection(subRes)

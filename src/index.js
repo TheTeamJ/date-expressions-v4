@@ -29,7 +29,7 @@ const sample2 = [
 ]
 // debug(sample)
 
-const res = mergeMutations(sample2) // まだfを含む状態
+const res = mergeMutations(sample1) // まだfを含む状態
 console.log('res: OR:')
 log(res)
 console.log('------------------')
