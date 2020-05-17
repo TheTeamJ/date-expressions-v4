@@ -2,6 +2,7 @@ const Moment = require('moment-timezone')
 const MomentRange = require('moment-range')
 const moment = MomentRange.extendMoment(Moment)
 const { expandArray, getFillArray } = require('./lib')
+const { intersect } = require('../intersect/')
 const tz = 'Asia/Tokyo'
 
 // y, m, d, h に関して、
@@ -43,8 +44,23 @@ const detectFillUnits = finestUnit => {
     case 'h': return ['m', 'd']
     case 'd': return ['m', 'd']
     case 'm': return ['m']
+    case 'y': return ['y']
   }
   return []
+}
+
+const expandConstY = mutation => {
+  const res = []
+  const { y } = mutation
+  const range = moment.range(
+    moment.tz(tz).year(y[0]).startOf('year'),
+    moment.tz(tz).year(y[1]).endOf('year')
+  )
+  for (const date of range.by('year')) {
+    const y = date.year()
+    res.push({ y: [y, y], m: [1, 12], d: [1, 31], h: [0, 23] })
+  }
+  return res
 }
 
 const expandM = mutation => {
@@ -134,9 +150,11 @@ const expandMD = mutation => {
 const transformMutaiton = (mutation, fillUnits) => {
   let res = [mutation]
   if (fillUnits.includes('d')) {
-    res = expandMD(mutation)
+    res = expandMD(mutation) // YMD
   } else if (fillUnits.includes('m')) {
-    res = expandM(mutation)
+    res = expandM(mutation) // YM
+  } else if (fillUnits.includes('y')) {
+    res = expandConstY(mutation)
   }
   return res
 }
@@ -149,10 +167,10 @@ const transformMutaitons = (mutations, finestUnit) => {
   for (const mutation of mutations) {
     const newMutations = transformMutaiton(mutation, fillUnits)
     // console.log(JSON.stringify(newMutations, null, 2))
-    console.log(newMutations)
+    // console.log(newMutations)
     subRes.push(newMutations)
   }
-  // const interRange = intersection(subRes)
+  const interRange = intersect(subRes)
 }
 
 module.exports = {

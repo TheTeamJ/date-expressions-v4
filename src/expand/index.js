@@ -1,10 +1,10 @@
 const Moment = require('moment-timezone')
 const MomentRange = require('moment-range')
 const moment = MomentRange.extendMoment(Moment)
-const { cloneDeep } = require('lodash')
+// const { cloneDeep } = require('lodash')
 const { transformMutaitons } = require('./transform')
 const { isAbsNumsArray } = require('../lib')
-const { convertToMomentRange } = require('../intersection/')
+// const { convertToMomentRange } = require('../intersection/')
 
 // ここから！！！
 // いまのところfになりうるのはm,dだけなので、場合分けを全部記述しても3通りしかない
@@ -37,7 +37,7 @@ const expandFillUnits = mutationGroup => {
         if (isAbsNumsArray(mutation[unit])) absNumsArrayUnits.add(unit)
       }
     }
-    let finestUnit = ''
+    let finestUnit = 'y'
     for (const unit of units) {
       if (absNumsArrayUnits.has(unit)) {
         finestUnit = unit
@@ -48,7 +48,7 @@ const expandFillUnits = mutationGroup => {
     console.log('AND:', mutations) // f入りのmutations
     // https://gyazo.com/e377622058ebd3d70b0388672557c6e0
     const ranges = transformMutaitons(mutations, finestUnit) // ここが解けない
-    console.log(ranges)
+    // console.log(ranges)
     console.log('-------------')
 
     // ranges.push(transformMutaitons(mutations, finestUnit))

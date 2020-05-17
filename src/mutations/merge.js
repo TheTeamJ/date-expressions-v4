@@ -61,7 +61,9 @@ const fixMutationUnits = combedMutations => {
           if (cond) {
             // 少々広くなるが、後にintersectionをとるだけなので大丈夫だと思う
             if (unit === 'y') {
-              newMut[unit] = [minYear, maxYear]
+              // mが具体的に指定されている場合は年またぎしない
+              // XXX: 年またぎを解消してからこの関数に入ってきてほしい？
+              newMut[unit] = [minYear, isAbsNumsArray(mut.m) ? minYear : maxYear]
               if (isRelNumsArray(value)) {
                 newMut[unit][0] += parseInt(value[0])
                 newMut[unit][1] += parseInt(value[1])
@@ -118,7 +120,7 @@ const fixMutationUnits = combedMutations => {
 
 // mutationGroup: [[{}, {}], [{}], ...]
 const mergeMutations = mutationGroup => {
-  let combinations = [mutationGroup[0]] // [{}, ...]
+  let combinations = mutationGroup[0].map(mut => [mut]) // [[{}], ...]
   for (let i = 1; i < mutationGroup.length; i++) {
     const newCombinations = []
     for (const combination of combinations) {
