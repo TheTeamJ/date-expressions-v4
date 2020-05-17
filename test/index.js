@@ -2,7 +2,7 @@
 const { testRanges, expandD, expandMD } = require('./lib')
 const { y2015mFd11, y2015mFd11h15 } = require('./const')
 
-const runLateTest = false
+const runLateTest = true
 
 describe('Resolve absolute date ranges', function () {
   it('basic mono', function () {
@@ -62,6 +62,11 @@ describe('Resolve absolute date ranges', function () {
     testRanges('冬/JSConf/午前/9時', [['2019/12/01 09:00', '2019/12/01 09:59']])
     testRanges('春', [['2020/03/01 00:00', '2020/05/31 23:59']])
     testRanges('春/4月', [['2020/04/01 00:00', '2020/04/30 23:59']])
+    testRanges('旅行/春', [
+      ['2017/03/05 00:00', '2017/03/06 23:59'],
+      ['2019/04/05 00:00', '2019/04/07 23:59']
+    ])
+    testRanges('旅行/春/2019', [['2019/04/05 00:00', '2019/04/07 23:59']])
     testRanges('2015/春', [['2015/03/01 00:00', '2015/05/31 23:59']])
     testRanges('2015/春/4月', [['2015/04/01 00:00', '2015/04/30 23:59']])
     testRanges('2015/4月/春', [['2015/04/01 00:00', '2015/04/30 23:59']])
@@ -166,6 +171,7 @@ describe('Resolve absolute date ranges', function () {
     testRanges('2017年/インターンシップ', [['2017/08/14 00:00', '2017/09/29 23:59']])
     testRanges('夏/B3/インターンシップ', [['2015/08/10 00:00', '2015/08/31 23:59']])
     testRanges('夏/インターンシップ/B3', [['2015/08/10 00:00', '2015/08/31 23:59']])
+    testRanges('インターンシップ/旅行', [['2015/09/03 00:00', '2015/09/04 23:59']])
 
     if (runLateTest) {
       testRanges('2015年/インターンシップ/13時', [
