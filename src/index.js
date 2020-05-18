@@ -29,7 +29,7 @@ const sample2 = [
   // basicMutations['(インターン)'],
 ]
 
-const parsed = parse('2016年')
+const parsed = parse('ここ2年/冬')
 const mutations = parsed.actions.map(item => item.mutations)
 // const res = mergeMutations(sample1) // まだfを含む状態
 const res = mergeMutations(mutations)
