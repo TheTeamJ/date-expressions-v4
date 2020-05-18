@@ -43,7 +43,8 @@ const createGroup = ranges => {
   }
   const res = []
   const addToRes = () => {
-    res.push(moment.range(group[0], group[1]))
+    const range = moment.range(moment.tz(group[0], tz), moment.tz(group[1], tz))
+    res.push(range)
     group = []
   }
 
