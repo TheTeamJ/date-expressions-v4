@@ -3,8 +3,7 @@ const { cloneDeep } = require('lodash')
 const { parse, format, convertMutationToMomentDate } = require('./utils/')
 const { mergeMutations } = require('./mutations/merge')
 const { calcRangesOr } = require('./expand/')
-
-// delimiter
+const { debug } = require('./lib')
 
 class DateExp {
   constructor (expression, timezone = 'Asia/Tokyo', base = {}) {
@@ -21,6 +20,7 @@ class DateExp {
     // TODO: private class fields にする
     this._parsed = parse(expression, convertMutationToMomentDate(this.base, this.tz))
     this._ranges = []
+    debug(this)
   }
 
   get unhandledExpression () {
@@ -50,7 +50,7 @@ class DateExp {
 
 module.exports = DateExp
 
-const dateExp = new DateExp('今日', 'Asia/Tokyo', { y: 2020, m: 5, d: 10, h: 0 })
-console.log('>>', dateExp.resolve())
-console.log('>>', dateExp.format())
-console.log(dateExp)
+// const dateExp = new DateExp('今日', 'Asia/Tokyo', { y: 2020, m: 5, d: 10, h: 0 })
+// console.log(dateExp.unhandledExpression)
+// console.log('>>', dateExp.resolve())
+// console.log('>>', dateExp.format())

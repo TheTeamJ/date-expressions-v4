@@ -2,7 +2,7 @@
 const { testRanges, expandD, expandMD } = require('./lib')
 const ConstRanges = require('./const')
 
-const runLateTest = false
+const runLateTest = true
 
 // TODO: baseを固定する仕組みをつくる
 describe('Resolve absolute date ranges', function () {
