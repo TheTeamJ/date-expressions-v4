@@ -50,8 +50,3 @@ class DateExp {
 }
 
 module.exports = DateExp
-
-// const dateExp = new DateExp('今日', 'Asia/Tokyo', { y: 2020, m: 5, d: 10, h: 0 })
-// console.log(dateExp.unhandledExpression)
-// console.log('>>', dateExp.resolve())
-// console.log('>>', dateExp.format())
