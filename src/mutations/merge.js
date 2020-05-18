@@ -1,5 +1,5 @@
 const { cloneDeep } = require('lodash')
-const { isAbsNumsArray, isRelNumsArray, debug } = require('../lib')
+const { isAbsNumsArray, isRelNumsArray } = require('../lib')
 
 // setA: [1, 2], setB: [3, 4] -> [[1, 2, 3], [1, 2, 4]]
 const setCrtesian = (setA, setB) => {
