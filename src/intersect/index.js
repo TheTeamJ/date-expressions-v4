@@ -12,9 +12,19 @@ const setCrtesian = (setA, setB) => {
     res.push(setB[j])
     // intersectionを計算して、空でなければ追加する
     const interRange = intersectRanges(...res)
+    // if (interRange) console.log(">>", interRange)
     if (interRange !== null) result.push(interRange)
   }
   return result
+}
+
+// timezoneを考慮したrangeを返す
+const retrieveRange = momentRangeObj => {
+  if (!momentRangeObj) return null
+  return {
+    start: moment.tz(momentRangeObj.start, tz),
+    end: moment.tz(momentRangeObj.end, tz)
+  }
 }
 
 const convertToMomentRanges = mutations => {
@@ -41,6 +51,7 @@ const createGroup = ranges => {
   const initGroup = (start, end) => {
     group = [start, end]
   }
+
   const res = []
   const addToRes = () => {
     const range = moment.range(moment.tz(group[0], tz), moment.tz(group[1], tz))
@@ -49,10 +60,10 @@ const createGroup = ranges => {
   }
 
   for (let i = 0; i < ranges.length; i++) {
-    const { start, end } = ranges[i]
+    const { start, end } = retrieveRange(ranges[i])
     if (group.length === 0) initGroup(start, end)
 
-    const nextRange = ranges[i + 1]
+    const nextRange = retrieveRange(ranges[i + 1])
     if (!nextRange) {
       group[1] = end
       addToRes()
@@ -85,7 +96,6 @@ const intersect = mutationGroup => {
     orRes = cloneDeep(newRes)
   }
   // 挙動が不安定な場合はここを確認
-  // console.log("##", orRes)
   return createGroup(orRes)
 }
 
