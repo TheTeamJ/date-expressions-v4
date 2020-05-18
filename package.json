@@ -6,7 +6,7 @@
   "scripts": {
     "test": "run-s test:*",
     "test:standard": "standard",
-    "test:mocha": "DEBUG=DateExp mocha test/*.js"
+    "test:mocha": "mocha test/*.js --timeout 90000"
   },
   "author": "daiiz",
   "license": "MIT",

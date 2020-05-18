@@ -1,25 +1,34 @@
 /* eslint-env mocha */
 const { assert } = require('chai')
 const moment = require('moment-timezone')
-const { DateExpressions } = require('../src/')
+// const { DateExpressions } = require('../src/')
+const { parse, format } = require('../src/utils/')
+const { mergeMutations } = require('../src/mutations/merge')
+const { calcRangesOr } = require('../src/expand/')
 
 // 2020/5/10
-const today = moment.tz(DateExpressions.timezone).year(2020).month(4).date(10)
-const todayRange = [
-  '2020/05/10 00:00',
-  '2020/05/10 23:59'
-]
+// const today = moment.tz(DateExpressions.timezone).year(2020).month(4).date(10)
+// const todayRange = [
+//   '2020/05/10 00:00',
+//   '2020/05/10 23:59'
+// ]
+
+const tz = 'Asia/Tokyo'
 
 function testRanges (source, results) {
-  const de = new DateExpressions(source)
-  assert.equal(de.base[0].format('YYYY/MM/DD HH:mm'), todayRange[0])
-  assert.deepEqual(DateExpressions.format(de._currentRanges), [todayRange])
-  const res = de.resolve()
-  assert.deepEqual(DateExpressions.format(res.momentRanges), results)
+  // const de = new DateExpressions(source)
+  // assert.equal(de.base[0].format('YYYY/MM/DD HH:mm'), todayRange[0])
+  // assert.deepEqual(DateExpressions.format(de._currentRanges), [todayRange])
+  // const res = de.resolve()
+  const parsed = parse(source)
+  const mutations = parsed.actions.map(item => item.mutations)
+  const merged = mergeMutations(mutations)
+  const ranges = calcRangesOr(merged)
+  assert.deepEqual(format(ranges), results)
 }
 
 const getLastDate = ({ y, m }) => {
-  return moment.tz(DateExpressions.timezone).year(parseInt(y)).month(parseInt(m) - 1).endOf('month').date()
+  return moment.tz(tz).year(parseInt(y)).month(parseInt(m) - 1).endOf('month').date()
 }
 
 const expandD = ({ y, m, h, start, end }) => {
@@ -66,8 +75,8 @@ const expandMD = ({ y, h }) => {
 }
 
 module.exports = {
-  today,
-  todayRange,
+  // today,
+  // todayRange,
   expandD,
   expandMD,
   testRanges
