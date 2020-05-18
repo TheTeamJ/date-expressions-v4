@@ -1,7 +1,9 @@
 const { sortBy } = require('lodash')
 const moment = require('moment-timezone')
 const { basicMutations } = require('../mutations/basics')
-const now = moment.tz('Asia/Tokyo')
+
+const tz = 'Asia/Tokyo'
+const now = moment.tz(tz)
 
 const parse = (expression, splitter = '/') => {
   const patternTexts = Object.keys(basicMutations)
@@ -31,7 +33,10 @@ const format = (ranges, fmt = 'YYYY/MM/DD HH:mm') => {
   const res = []
   // range: [momentObject, momentObject]
   for (const range of ranges) {
-    res.push([range[0].format(fmt), range[1].format(fmt)])
+    res.push([
+      moment.tz(range[0], tz).format(fmt),
+      moment.tz(range[1], tz).format(fmt)
+    ])
   }
   return res
 }
