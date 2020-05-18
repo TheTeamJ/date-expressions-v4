@@ -4,9 +4,9 @@
 
 https://scrapbox.io/teamj/date-expressions_(v4)
 
-## Dev
+## Dev: Run examples
 ```
-$ TZ=UTC DEBUG=* node src/index.js
+$ TZ=UTC DEBUG=* node src/examples.js
 ```
 
 ## Dev: test
