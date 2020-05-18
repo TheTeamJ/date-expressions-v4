@@ -1,40 +1,52 @@
+const moment = require('moment-timezone')
+const { cloneDeep } = require('lodash')
+const { parse, format, convertMutationToMomentDate } = require('./utils/')
 const { mergeMutations } = require('./mutations/merge')
-const { basicMutations } = require('./mutations/basics')
 const { calcRangesOr } = require('./expand/')
-const { parse } = require('./utils/')
 const { debug } = require('./lib')
 
-// const util = require('util')
-// const log = x => {
-//   console.log(util.inspect(x, false, null, true))
-// }
+class DateExp {
+  constructor (expression, timezone = 'Asia/Tokyo', base = {}) {
+    const now = moment.tz(timezone).startOf('hour')
+    this.rawExpression = expression
+    this.tz = timezone
+    this.base = {
+      y: base.y > 0 ? base.y : now.year(),
+      m: base.m > 0 ? base.m : now.month() + 1, // human friendly month
+      d: base.d > 0 ? base.d : now.date(),
+      h: base.h >= 0 ? base.h : now.hour()
+    }
 
-const sample1 = [
-  // basicMutations['(今日)'],
-  // basicMutations['(午後)'],
-  // basicMutations['(11日)'],
-  // basicMutations['(ここ5年)'],
-  basicMutations['(夏)'],
-  // basicMutations['(今月)'],
-  // basicMutations['(インターン)'],
-  // basicMutations['(2015年)'],
-  // basicMutations['(B3)']
-]
+    // TODO: private class fields にする
+    this._parsed = parse(expression, convertMutationToMomentDate(this.base, this.tz))
+    this._ranges = []
+    this._mergedMutations = []
+    debug(this)
+  }
 
-const sample2 = [
-  basicMutations['(2015年)'],
-  // basicMutations['(今月)'],
-  // basicMutations['(冬)'],
-  basicMutations['(11日)']
-  // basicMutations['(インターン)'],
-]
+  get unhandledExpression () {
+    return this._parsed.unhandledExpression
+  }
 
-const parsed = parse('ここ2年/今ごろ')
-const mutations = parsed.actions.map(item => item.mutations)
-// const res = mergeMutations(sample1) // まだfを含む状態
-const res = mergeMutations(mutations)
-debug('res: OR:')
-debug(res)
-debug('------------------')
-const ranges = calcRangesOr(res) // moment-ranges group
-console.log(ranges)
+  get momentRanges () {
+    return cloneDeep(this._ranges)
+  }
+
+  get dateRanges () {
+    return this.momentRanges.map(range => [range[0].toDate(), range[1].toDate()])
+  }
+
+  format (fmt = 'YYYY/MM/DD HH:mm') {
+    return format(this._ranges, this.tz, fmt)
+  }
+
+  resolve () {
+    if (this._parsed.length === 0) return []
+    const mutations = this._parsed.actions.map(item => item.mutations)
+    this._mergedMutations = mergeMutations(mutations) // まだfを含む状態
+    this._ranges = calcRangesOr(this._mergedMutations) // moment-ranges group
+    return this
+  }
+}
+
+module.exports = DateExp

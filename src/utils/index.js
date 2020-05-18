@@ -2,10 +2,7 @@ const { sortBy } = require('lodash')
 const moment = require('moment-timezone')
 const { basicMutations } = require('../mutations/basics')
 
-const tz = 'Asia/Tokyo'
-const now = moment.tz(tz)
-
-const parse = (expression, splitter = '/') => {
+const parse = (expression, baseMomentDate) => {
   const patternTexts = Object.keys(basicMutations)
   const patterns = patternTexts.map(p => new RegExp(p, 'i'))
   const res = []
@@ -20,7 +17,11 @@ const parse = (expression, splitter = '/') => {
       whole
     }
     if (typeof action.mutations === 'function') {
-      action.mutations = action.mutations(matched, now.clone())
+      action.mutations = action.mutations(matched, baseMomentDate.clone())
+    }
+    // 基準時刻を記録する
+    for (let j = 0; j < action.mutations.length; j++) {
+      action.mutations[j]._base = convertMomentDateToMutation(baseMomentDate)
     }
     expression = expression.replace(whole, '*'.repeat(whole.length))
     res.push(action)
@@ -29,19 +30,37 @@ const parse = (expression, splitter = '/') => {
   return { actions: sortBy(res, 'indexOf'), unhandledExpression }
 }
 
-const format = (ranges, fmt = 'YYYY/MM/DD HH:mm') => {
+const format = (ranges, timezone, fmt) => {
   const res = []
   // range: [momentObject, momentObject]
   for (const range of ranges) {
     res.push([
-      moment.tz(range[0], tz).format(fmt),
-      moment.tz(range[1], tz).format(fmt)
+      moment.tz(range[0], timezone).format(fmt),
+      moment.tz(range[1], timezone).format(fmt)
     ])
   }
   return res
 }
 
+const convertMutationToMomentDate = (mutation, timezone) => {
+  const { y, m, d, h } = mutation
+  if (y === undefined || m === undefined || d === undefined || h === undefined) {
+    throw new Error('Invalid mutation')
+  }
+  return moment.tz(timezone).year(y).month(m - 1).date(d).hour(h).startOf('hour')
+}
+
+const convertMomentDateToMutation = momentDate => {
+  return {
+    y: momentDate.year(),
+    m: momentDate.month() + 1, // human friendly month
+    d: momentDate.date(),
+    h: momentDate.hour()
+  }
+}
+
 module.exports = {
   parse,
-  format
+  format,
+  convertMutationToMomentDate
 }

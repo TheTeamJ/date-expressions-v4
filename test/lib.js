@@ -1,10 +1,7 @@
 /* eslint-env mocha */
 const { assert } = require('chai')
 const moment = require('moment-timezone')
-// const { DateExpressions } = require('../src/')
-const { parse, format } = require('../src/utils/')
-const { mergeMutations } = require('../src/mutations/merge')
-const { calcRangesOr } = require('../src/expand/')
+const DateExp = require('../src/')
 
 // 2020/5/10
 // const today = moment.tz(DateExpressions.timezone).year(2020).month(4).date(10)
@@ -16,15 +13,9 @@ const { calcRangesOr } = require('../src/expand/')
 const tz = 'Asia/Tokyo'
 
 function testRanges (source, results) {
-  // const de = new DateExpressions(source)
-  // assert.equal(de.base[0].format('YYYY/MM/DD HH:mm'), todayRange[0])
-  // assert.deepEqual(DateExpressions.format(de._currentRanges), [todayRange])
-  // const res = de.resolve()
-  const parsed = parse(source)
-  const mutations = parsed.actions.map(item => item.mutations)
-  const merged = mergeMutations(mutations)
-  const ranges = calcRangesOr(merged)
-  assert.deepEqual(format(ranges), results)
+  const dateExp = new DateExp(source, tz, { y: 2020, m: 5, d: 10, h: 0 })
+  dateExp.resolve()
+  assert.deepEqual(dateExp.format(), results)
 }
 
 const getLastDate = ({ y, m }) => {

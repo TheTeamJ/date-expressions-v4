@@ -1,11 +1,3 @@
-const { cloneDeep } = require('lodash')
-const moment = require('moment-timezone')
-const { debug } = require('../../src/lib')
-
-const now = moment.tz('Asia/Tokyo')
-const base = { y: now.year(), m: now.month() + 1, d: now.date(), h: now.hour() }
-debug(base)
-
 // 数値指定されているunitの要素数を2にするなど
 // 増減量表現でない場合は数値型に変換する
 const fmt = mutation => {
@@ -44,7 +36,6 @@ const a = mutations => {
   for (const mut of mutations) {
     const mutation = fmt(createMutaion(mut, 'i'))
     mutation._kind = 'a'
-    mutation._base = cloneDeep(base)
     res.push(mutation)
   }
   return res
@@ -58,7 +49,6 @@ const r = mutations => {
   for (const mut of mutations) {
     const mutation = fmt(createMutaion(mut, 'I'))
     mutation._kind = 'r'
-    mutation._base = cloneDeep(base)
     res.push(mutation)
   }
   return res
