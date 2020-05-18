@@ -20,6 +20,7 @@ class DateExp {
     // TODO: private class fields にする
     this._parsed = parse(expression, convertMutationToMomentDate(this.base, this.tz))
     this._ranges = []
+    this._mergedMutations = []
     debug(this)
   }
 
@@ -42,9 +43,9 @@ class DateExp {
   resolve () {
     if (this._parsed.length === 0) return []
     const mutations = this._parsed.actions.map(item => item.mutations)
-    const mergedMuts = mergeMutations(mutations)
-    this._ranges = calcRangesOr(mergedMuts)
-    return this.dateRanges
+    this._mergedMutations = mergeMutations(mutations) // まだfを含む状態
+    this._ranges = calcRangesOr(this._mergedMutations) // moment-ranges group
+    return this
   }
 }
 
