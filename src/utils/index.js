@@ -5,7 +5,7 @@ const { basicMutations } = require('../mutations/basics')
 const tz = 'Asia/Tokyo'
 const now = moment.tz(tz)
 
-const parse = (expression, splitter = '/') => {
+const parse = (expression) => {
   const patternTexts = Object.keys(basicMutations)
   const patterns = patternTexts.map(p => new RegExp(p, 'i'))
   const res = []
