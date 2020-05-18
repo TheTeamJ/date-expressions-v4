@@ -36,7 +36,7 @@ const basicMutations = {
       return a({ y: ['-1'], m: [m], d: 'f', h: 'f' })
     }
   },
-  '(去年)': (_, base) => {
+  '(去年|昨年)': (_, base) => {
     return a({ y: [base.year() - 1], m: 'f', d: 'f', h: 'f' })
   },
   '(旅行)': a([
@@ -61,6 +61,19 @@ const basicMutations = {
   'ここ(\\d+)年': matched => {
     const delta = parseInt(matched[1]) - 1
     return a({ y: [2020 - delta, 2020], m: 'f', d: 'f', h: 'f' })
+  },
+  '(今頃|今ごろ)': (_, base) => {
+    const l = base.clone().add(-1, 'month')
+    const mL = l.month() + 1
+    const r = base.clone().add(+1, 'month')
+    const mR = r.month() + 1
+    if (l.year() !== base.year()) {
+      return a({ y: ['-1', '+0'], m: [mL, mR], d: 'f', h: 'f' })
+    } else if (r.year() !== base.year()) {
+      return a({ y: ['+0', '+1'], m: [mL, mR], d: 'f', h: 'f' })
+    } else {
+      return a({ m: [mL, mR], d: 'f', h: 'f' })
+    }
   },
   '(2年前)': r([{ y: 'I-2', m: 'f', d: 'f', h: 'f' }]),
   '(2ヶ月前)': r([{ m: 'I-2', d: 'f', h: 'f' }])

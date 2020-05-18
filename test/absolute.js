@@ -2,7 +2,7 @@
 const { testRanges, expandD, expandMD } = require('./lib')
 const { y2015mFd11, y2015mFd11h15 } = require('./const')
 
-const runLateTest = true
+const runLateTest = false
 
 // TODO: baseを固定する仕組みをつくる
 describe('Resolve absolute date ranges', function () {
@@ -24,11 +24,17 @@ describe('Resolve absolute date ranges', function () {
   })
 
   it('specials', function () {
+    testRanges('去年/今日', [['2019/05/10 00:00', '2019/05/10 23:59']])
     testRanges('2015年/今月', [['2015/05/01 00:00', '2015/05/31 23:59']])
     // testRanges('2015年/今月/今日', [['2015/05/10 00:00', '2015/05/10 23:59']])
     testRanges('2015年/先月', [['2015/04/01 00:00', '2015/04/30 23:59']])
     // testRanges('2015年/先月/今日/午前', [['2015/04/10 00:00', '2015/04/10 11:59']])
     // testRanges('2015年/今日', [['2015/05/10 00:00', '2015/05/10 23:59']])
+    testRanges('去年/今頃', [['2019/04/01 00:00', '2019/06/30 23:59']])
+    testRanges('ここ2年/今頃', [
+      ['2019/04/01 00:00', '2019/06/30 23:59'],
+      ['2020/04/01 00:00', '2020/06/30 23:59']
+    ])
   })
 
   it('inheritX', function () {
