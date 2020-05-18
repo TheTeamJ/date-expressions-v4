@@ -15,6 +15,9 @@ const ranges = dateExp.resolve().dateRanges
 // ]
 ```
 
+### Examples
+- [Absolute expressions](https://github.com/TheTeamJ/date-expressions-v4/blob/master/test/absolute.js)
+
 ## Dev: Run examples
 ```
 $ TZ=UTC DEBUG=* node src/examples.js
