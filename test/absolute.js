@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 const { testRanges, expandD, expandMD } = require('./lib')
-const { y2015mFd11, y2015mFd11h15 } = require('./const')
+const ConstRanges = require('./const')
 
 const runLateTest = false
 
@@ -44,18 +44,12 @@ describe('Resolve absolute date ranges', function () {
     testRanges('2015年/4月/12日', [['2015/04/12 00:00', '2015/04/12 23:59']])
     testRanges('2015年/4月/12日/13時', [['2015/04/12 13:00', '2015/04/12 13:59']])
     testRanges('4月/12日/13時', [['2020/04/12 13:00', '2020/04/12 13:59']])
-    testRanges('ここ5年/元旦', [
-      ['2016/01/01 00:00', '2016/01/01 23:59'],
-      ['2017/01/01 00:00', '2017/01/01 23:59'],
-      ['2018/01/01 00:00', '2018/01/01 23:59'],
-      ['2019/01/01 00:00', '2019/01/01 23:59'],
-      ['2020/01/01 00:00', '2020/01/01 23:59']
-    ])
+    testRanges('ここ5年/元旦', ConstRanges.yRecent5m1d1)
   })
 
   it('expandX', function () {
-    testRanges('2015年/11日', y2015mFd11)
-    testRanges('2015年/11日/15時', y2015mFd11h15)
+    testRanges('2015年/11日', ConstRanges.y2015mFd11)
+    testRanges('2015年/11日/15時', ConstRanges.y2015mFd11h15)
     testRanges('4月/13時', expandD({ y: '2020', m: '04', h: '13' }))
     if (runLateTest) {
       testRanges('2015年/11日/15時/6月', [['2015/06/11 15:00', '2015/06/11 15:59']])
