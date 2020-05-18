@@ -4,15 +4,15 @@ const MomentRange = require('moment-range')
 const moment = MomentRange.extendMoment(Moment)
 const tz = 'Asia/Tokyo'
 
-// setA: [1, 2], setB: [3, 4] -> [[1, 2, 3], [1, 2, 4]]
+// setA: [1], setB: [3, 4] -> [[1, 3], [1, 4]]
 const setCrtesian = (setA, setB) => {
+  if (setA.length !== 1) throw new Error('Length of setA must be 1')
   const result = []
   for (let j = 0; j < setB.length; j++) {
     const res = cloneDeep(setA)
     res.push(setB[j])
     // intersectionを計算して、空でなければ追加する
     const interRange = intersectRanges(...res)
-    // if (interRange) console.log(">>", interRange)
     if (interRange !== null) result.push(interRange)
   }
   return result

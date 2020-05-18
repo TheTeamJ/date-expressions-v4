@@ -3,7 +3,7 @@ const { calcRangesOr } = require('./expand/')
 const { parse } = require('./utils/')
 const { debug } = require('./lib')
 
-const parsed = parse('ここ2年/今ごろ')
+const parsed = parse('ここ2年/今ごろ/5日')
 const mutations = parsed.actions.map(item => item.mutations)
 const res = mergeMutations(mutations) // まだfを含む状態
 debug('res: OR:')
