@@ -4,7 +4,7 @@ const ConstRanges = require('./const')
 
 const runLateTest = true
 
-// TODO: baseを固定する仕組みをつくる
+// 実行基準日は 2020/05/10 0:00 に固定されている
 describe('Resolve absolute date ranges', function () {
   it('basic mono', function () {
     testRanges('2015年', [['2015/01/01 00:00', '2015/12/31 23:59']])
