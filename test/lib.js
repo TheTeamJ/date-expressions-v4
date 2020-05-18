@@ -24,7 +24,7 @@ function testRanges (source, results) {
   const mutations = parsed.actions.map(item => item.mutations)
   const merged = mergeMutations(mutations)
   const ranges = calcRangesOr(merged)
-  assert.deepEqual(format(ranges), results)
+  assert.deepEqual(format(ranges, 'Asia/Tokyo'), results)
 }
 
 const getLastDate = ({ y, m }) => {
