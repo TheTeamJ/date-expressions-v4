@@ -61,9 +61,9 @@ const fixMutationUnits = combedMutations => {
           if (cond) {
             // 少々広くなるが、後にintersectionをとるだけなので大丈夫だと思う
             if (unit === 'y') {
-              // mが具体的に指定されている場合は年またぎしたくない
               if (isAbsNumsArray(mut.m)) {
-                // valueをそのまま残す
+                // この時点ではyの範囲を決定できないので、value (I/i) をそのまま残す
+                // mが具体的に指定されている場合は年またぎしない
               } else {
                 newMut[unit] = [minYear, maxYear]
                 if (isRelNumsArray(value)) {
@@ -89,7 +89,9 @@ const fixMutationUnits = combedMutations => {
           // このままでいい
           break
         default: { // 数値配列
-          if (unit !== 'y') break // このままでいい
+          if (unit !== 'y') {
+            break // このままでいい
+          }
           if (isRelNumsArray(value)) {
             if (absNumsArrayUnits.has(unit)) {
               newMut[unit] = [
