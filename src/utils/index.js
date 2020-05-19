@@ -16,12 +16,15 @@ const parse = (expression, baseMomentDate, customMutations = []) => {
       mutations: mutationsList[idx][1],
       whole
     }
-    if (typeof action.mutations === 'function') {
-      action.mutations = action.mutations(matched, baseMomentDate.clone())
-    }
-    // 基準時刻を記録する
-    for (let j = 0; j < action.mutations.length; j++) {
-      action.mutations[j]._base = convertMomentDateToMutation(baseMomentDate)
+    // analyzeExpression関数の実行時にはbaseMomentDateが与えられない
+    if (baseMomentDate) {
+      if (typeof action.mutations === 'function') {
+        action.mutations = action.mutations(matched, baseMomentDate.clone())
+      }
+      // 基準時刻を記録する
+      for (let j = 0; j < action.mutations.length; j++) {
+        action.mutations[j]._base = convertMomentDateToMutation(baseMomentDate)
+      }
     }
     expression = expression.replace(whole, '*'.repeat(whole.length))
     res.push(action)

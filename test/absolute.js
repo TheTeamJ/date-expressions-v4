@@ -8,8 +8,10 @@ const ConstRanges = require('./const')
 const runLateTest = true
 
 describe('Custom mutations have been registered.', function () {
-  // テスト用のCustom mutaitonsを登録する
-  registerSampleCustomMutations()
+  before(function () {
+    // テスト用のCustom mutaitonsを登録する
+    registerSampleCustomMutations()
+  })
 
   it('There are five mutations defined by user.', function () {
     assert.equal(DateExp.customMutations.length, 5)
@@ -18,7 +20,10 @@ describe('Custom mutations have been registered.', function () {
 
 // 実行基準日は 2020/05/10 00:00 に固定されている
 describe('Resolve absolute date ranges', function () {
-  registerSampleCustomMutations()
+  before(function () {
+    // テスト用のCustom mutaitonsを登録する
+    registerSampleCustomMutations()
+  })
 
   it('basic mono', function () {
     testRanges('2015年', [['2015/01/01 00:00', '2015/12/31 23:59']])
@@ -69,6 +74,7 @@ describe('Resolve absolute date ranges', function () {
     testRanges('2015年/4月/12日/13時', [['2015/04/12 13:00', '2015/04/12 13:59']])
     testRanges('4月/12日/13時', [['2020/04/12 13:00', '2020/04/12 13:59']])
     testRanges('ここ5年/元旦', ConstRanges.yRecent5m1d1)
+    testRanges('2000年/年末', [['2000/12/26 00:00', '2000/12/31 23:59']])
   })
 
   it('expandX', function () {

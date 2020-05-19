@@ -1,6 +1,7 @@
 const moment = require('moment-timezone')
 const { cloneDeep } = require('lodash')
 const { parse, format, convertMutationToMomentDate } = require('./utils/')
+const { analyzeQueryExpression } = require('./analyze/')
 const { mergeMutations } = require('./mutations/merge')
 const { calcRangesOr } = require('./expand/')
 const { createMutation } = require('./mutations/custom')
@@ -35,10 +36,12 @@ class DateExp {
   }
 
   static addCustomMutation (exporession, mutation, kind = 'a') {
-    if (DateExp._customMutations === undefined) {
-      DateExp._customMutations = []
-    }
+    if (DateExp._customMutations === undefined) DateExp._customMutations = []
     DateExp._customMutations.push(createMutation(exporession, mutation, kind))
+  }
+
+  static analyzeExpression (expression, delimiter = '/') {
+    return analyzeQueryExpression({ expression, delimiter, customMutations: DateExp.customMutations })
   }
 
   get unhandledExpression () {
