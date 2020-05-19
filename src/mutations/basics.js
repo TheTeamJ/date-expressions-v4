@@ -22,7 +22,9 @@ const basicMutations = {
     { m: [1, 2], d: 'f', h: 'f' },
     { m: [12], d: 'f', h: 'f' }
   ]),
-  '(今日)': a({ m: 'I', d: [10], h: 'f' }), // 「今日」は5月10日としてシミュレート
+  '(今日)': (_, base) => {
+    return a({ m: 'I', d: [base.date()], h: 'f' })
+  },
   '(今月)': (_, base) => {
     const m = base.month() + 1
     return a({ m: [m], d: 'f', h: 'f' })

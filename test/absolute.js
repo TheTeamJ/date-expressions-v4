@@ -2,9 +2,9 @@
 const { testRanges, expandD, expandMD } = require('./lib')
 const ConstRanges = require('./const')
 
-const runLateTest = true
+const runLateTest = false
 
-// 実行基準日は 2020/05/10 0:00 に固定されている
+// 実行基準日は 2020/05/10 00:00 に固定されている
 describe('Resolve absolute date ranges', function () {
   it('basic mono', function () {
     testRanges('2015年', [['2015/01/01 00:00', '2015/12/31 23:59']])
@@ -38,6 +38,11 @@ describe('Resolve absolute date ranges', function () {
     testRanges('ここ2年/今頃', [
       ['2019/04/01 00:00', '2019/06/30 23:59'],
       ['2020/04/01 00:00', '2020/06/30 23:59']
+    ])
+    testRanges('去年/秋/今日', [
+      ['2019/09/10 00:00', '2019/09/10 23:59'],
+      ['2019/10/10 00:00', '2019/10/10 23:59'],
+      ['2019/11/10 00:00', '2019/11/10 23:59']
     ])
   })
 
