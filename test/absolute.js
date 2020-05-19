@@ -69,6 +69,7 @@ describe('Resolve absolute date ranges', function () {
     testRanges('2015年/4月/12日/13時', [['2015/04/12 13:00', '2015/04/12 13:59']])
     testRanges('4月/12日/13時', [['2020/04/12 13:00', '2020/04/12 13:59']])
     testRanges('ここ5年/元旦', ConstRanges.yRecent5m1d1)
+    testRanges('2000年/年末', [['2000/12/26 00:00', '2000/12/31 23:59']])
   })
 
   it('expandX', function () {

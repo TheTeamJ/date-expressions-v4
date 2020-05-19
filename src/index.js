@@ -35,9 +35,7 @@ class DateExp {
   }
 
   static addCustomMutation (exporession, mutation, kind = 'a') {
-    if (DateExp._customMutations === undefined) {
-      DateExp._customMutations = []
-    }
+    if (DateExp._customMutations === undefined) DateExp._customMutations = []
     DateExp._customMutations.push(createMutation(exporession, mutation, kind))
   }
 
