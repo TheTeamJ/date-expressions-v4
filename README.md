@@ -20,8 +20,8 @@ const ranges = dateExp.resolve().dateRanges
 
 ## Dev: Run examples
 ```
-$ TZ=UTC DEBUG=* node src/examples.js
-$ TEXT="2001年/2月/午後" node src/examples.js
+$ TZ=UTC DEBUG=* node examples.js
+$ DEBUG=* TEXT="2001年/2月/午後" node examples.js
 ```
 
 ## Dev: test
