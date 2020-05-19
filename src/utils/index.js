@@ -3,8 +3,6 @@ const moment = require('moment-timezone')
 const { basicMutations } = require('../mutations/basics')
 
 const parse = (expression, baseMomentDate) => {
-  // const patternTexts = Object.keys(basicMutations)
-  // const patterns = patternTexts.map(p => new RegExp(p, 'i'))
   const patterns = basicMutations.map(m => m[0])
   const res = []
   for (const [idx, regexp] of patterns.entries()) {
