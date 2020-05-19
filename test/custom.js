@@ -3,7 +3,7 @@ const DateExp = require('../src/')
 // sample mutations
 const customMutations = [
   [
-    /(B3|学部3年)/i,
+    /(学部3年|B3)/i,
     { y: [2015, 2016], m: [4, 3], d: [1, 31], h: 'f' },
     'a'
   ],
@@ -19,7 +19,7 @@ const customMutations = [
     'a'
   ],
   [
-    /(インターン|インターンシップ)/,
+    /(インターンシップ|インターン)/,
     [
       { y: [2015], m: [8, 9], d: [10, 4], h: 'f' },
       { y: [2017], m: [8, 9], d: [14, 29], h: 'f' }
