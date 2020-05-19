@@ -4,6 +4,10 @@ const { registerSampleCustomMutations } = require('./custom')
 const DateExp = require('../src/')
 
 describe('Query expression analyzer', function () {
+  before(function () {
+    DateExp.clearCustomMutations()
+  })
+
   it('There are zero mutations defined by user', function () {
     assert.equal(DateExp.customMutations.length, 0)
   })
