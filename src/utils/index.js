@@ -16,6 +16,7 @@ const parse = (expression, baseMomentDate, customMutations = []) => {
       mutations: mutationsList[idx][1],
       whole
     }
+    // analyzeExpression関数の実行時にはbaseMomentDateが与えられない
     if (baseMomentDate) {
       if (typeof action.mutations === 'function') {
         action.mutations = action.mutations(matched, baseMomentDate.clone())
