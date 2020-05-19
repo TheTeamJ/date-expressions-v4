@@ -159,7 +159,7 @@ describe('Resolve absolute date ranges', function () {
 
   if (runLateTest) {
     it('hRange', function () {
-      // testRanges('午前', [['2020/05/10 00:00', '2020/05/10 11:59']])
+      testRanges('午前', [['2020/05/10 00:00', '2020/05/10 11:59']])
       testRanges('2000年/4月/午前', expandD({ y: '2000', m: '04', h: ['00', '11'] }))
       testRanges('6日/午前', [['2020/05/06 00:00', '2020/05/06 11:59']])
       testRanges('6日/午前/10時', [['2020/05/06 10:00', '2020/05/06 10:59']])
