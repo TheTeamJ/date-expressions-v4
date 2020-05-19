@@ -18,6 +18,16 @@ const ranges = dateExp.resolve().dateRanges
 ### Examples
 - [Absolute expressions](https://github.com/TheTeamJ/date-expressions-v4/blob/master/test/absolute.js)
 
+## Usage: analyze query expressions
+```js
+const { handled, unhandled } = DateExp.analyzeExpression('夏/インターンシップ/午後', '/')
+// handled: ['夏', '午後']
+// unhandled: ['インターンシップ']
+```
+
+### Examples
+- [Use case](https://github.com/TheTeamJ/date-expressions-v4/blob/master/test/analyze.js)
+
 ## Dev: Run examples
 ```
 $ TZ=UTC DEBUG=* node examples.js
