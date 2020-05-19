@@ -1,11 +1,25 @@
 /* eslint-env mocha */
+const { assert } = require('chai')
+const DateExp = require('../src/')
+const { registerSampleCustomMutations } = require('./custom')
 const { testRanges, expandD, expandMD } = require('./lib')
 const ConstRanges = require('./const')
 
 const runLateTest = true
 
+describe('Custom mutations have been registered.', function () {
+  // テスト用のCustom mutaitonsを登録する
+  registerSampleCustomMutations()
+
+  it('There are five mutations defined by user.', function () {
+    assert.equal(DateExp.customMutations.length, 5)
+  })
+})
+
 // 実行基準日は 2020/05/10 00:00 に固定されている
 describe('Resolve absolute date ranges', function () {
+  registerSampleCustomMutations()
+
   it('basic mono', function () {
     testRanges('2015年', [['2015/01/01 00:00', '2015/12/31 23:59']])
     testRanges('4月', [['2020/04/01 00:00', '2020/04/30 23:59']])

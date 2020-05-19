@@ -3,6 +3,7 @@ const { cloneDeep } = require('lodash')
 const { parse, format, convertMutationToMomentDate } = require('./utils/')
 const { mergeMutations } = require('./mutations/merge')
 const { calcRangesOr } = require('./expand/')
+const { createMutation } = require('./mutations/custom')
 const { debug } = require('./lib')
 
 class DateExp {
@@ -18,10 +19,26 @@ class DateExp {
     }
 
     // TODO: private class fields にする
-    this._parsed = parse(expression, convertMutationToMomentDate(this.base, this.tz))
+    const customMutations = DateExp.customMutations
+    this._parsed = parse(expression, convertMutationToMomentDate(this.base, this.tz), customMutations)
     this._ranges = []
     this._mergedMutations = []
     debug(this)
+  }
+
+  static get customMutations () {
+    return DateExp._customMutations || []
+  }
+
+  static clearCustomMutations () {
+    DateExp._customMutations = []
+  }
+
+  static addCustomMutation (exporession, mutation, kind = 'a') {
+    if (DateExp._customMutations === undefined) {
+      DateExp._customMutations = []
+    }
+    DateExp._customMutations.push(createMutation(exporession, mutation, kind))
   }
 
   get unhandledExpression () {

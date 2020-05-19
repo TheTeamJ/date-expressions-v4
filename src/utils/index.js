@@ -2,8 +2,9 @@ const { sortBy } = require('lodash')
 const moment = require('moment-timezone')
 const { basicMutations } = require('../mutations/basics')
 
-const parse = (expression, baseMomentDate) => {
-  const patterns = basicMutations.map(m => m[0])
+const parse = (expression, baseMomentDate, customMutations = []) => {
+  const mutationsList = [...customMutations, ...basicMutations].filter(m => !!m)
+  const patterns = mutationsList.map(m => m[0])
   const res = []
   for (const [idx, regexp] of patterns.entries()) {
     const matched = expression.match(regexp) || []
@@ -12,7 +13,7 @@ const parse = (expression, baseMomentDate) => {
     const action = {
       indexOf: expression.indexOf(whole),
       regexp,
-      mutations: basicMutations[idx][1],
+      mutations: mutationsList[idx][1],
       whole
     }
     if (typeof action.mutations === 'function') {

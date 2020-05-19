@@ -6,4 +6,4 @@ const momentRanges = dateExp.resolve().momentRanges
 debug('OR: _mergedMutations:')
 debug(dateExp._mergedMutations)
 debug('------------------')
-debug(momentRanges)
+console.log(momentRanges)

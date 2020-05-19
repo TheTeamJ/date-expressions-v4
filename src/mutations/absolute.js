@@ -18,10 +18,6 @@ const absoluteMutations = [
     matched => a({ h: [matched[1]] })
   ],
   [
-    /(B3)/i,
-    a({ y: [2015, 2016], m: [4, 3], d: [1, 31], h: 'f' })
-  ],
-  [
     /春/,
     a([{ m: [3, 5], d: 'f', h: 'f' }])
   ],
