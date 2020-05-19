@@ -2,7 +2,7 @@
 const { testRanges, expandD, expandMD } = require('./lib')
 const ConstRanges = require('./const')
 
-const runLateTest = false
+const runLateTest = true
 
 // 実行基準日は 2020/05/10 00:00 に固定されている
 describe('Resolve absolute date ranges', function () {

@@ -123,6 +123,8 @@ const fixMutationUnits = combedMutations => {
 
 // mutationGroup: [[{}, {}], [{}], ...]
 const mergeMutations = mutationGroup => {
+  if (mutationGroup.length === 0) return []
+
   let combinations = mutationGroup[0].map(mut => [mut]) // [[{}], ...]
   for (let i = 1; i < mutationGroup.length; i++) {
     const newCombinations = []
