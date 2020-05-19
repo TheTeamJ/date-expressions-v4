@@ -14,6 +14,7 @@ describe('Resolve absolute date ranges', function () {
   })
 
   it('should return empty range', function () {
+    testRanges('foo', [])
     testRanges('2月/元旦', [])
     testRanges('春/7月', [])
     testRanges('午前/午後', [])
