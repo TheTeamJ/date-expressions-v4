@@ -40,12 +40,13 @@ class DateExp {
     DateExp._customMutations.push(createMutation(exporession, mutation, kind))
   }
 
-  static analyzeExpression (expression, delimiter = '/') {
+  static analyzeExpression (expression, delimiter) {
     return analyzeQueryExpression({ expression, delimiter, customMutations: DateExp.customMutations })
   }
 
-  get unhandledExpression () {
-    return this._parsed.unhandledExpression
+  unhandledExpression (delimiter) {
+    if (!delimiter) return this._parsed.unhandledExpression
+    return this._parsed.unhandledExpression.split(delimiter).filter(x => !!x)
   }
 
   get momentRanges () {
