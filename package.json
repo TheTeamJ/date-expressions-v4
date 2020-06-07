@@ -1,6 +1,6 @@
 {
   "name": "@daiiz/date-expressions",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "https://scrapbox.io/teamj/date-expressions_(v4)",
   "main": "src/index.js",
   "scripts": {
