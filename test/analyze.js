@@ -13,14 +13,14 @@ describe('Query expression analyzer', function () {
   })
 
   it('Correctly detect handled/unhandled expressions', function () {
-    const { handled, unhandled } = DateExp.analyzeExpression('令和1年/夏/夜', '/')
+    const { handled, unhandled } = DateExp.analyzeExpression('令和1年/夏/明け方', '/')
     // handled expressions
     assert.equal(handled.length, 1)
     assert.equal(handled[0], '夏')
     // unhandled (unregistered) expressions
     assert.equal(unhandled.length, 2)
     assert.equal(unhandled[0], '令和1年')
-    assert.equal(unhandled[1], '夜')
+    assert.equal(unhandled[1], '明け方')
   })
 
   it('After analyzed, add a custom mutations', function () {
