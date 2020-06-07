@@ -57,6 +57,10 @@ const absoluteMutations = [
     }
   ],
   [
+    /(今年|本年)/,
+    (_, base) => a({ y: [base.year()], m: 'f', d: 'f', h: 'f' })
+  ],
+  [
     /(去年|昨年)/,
     (_, base) => a({ y: [base.year() - 1], m: 'f', d: 'f', h: 'f' })
   ],
