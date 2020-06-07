@@ -2,6 +2,26 @@ const { a } = require('./')
 
 const absoluteMutations = [
   [
+    // YYYY/MM/DD
+    /(\d{4})[/-](\d{1,2})[/-](\d{1,2})/,
+    matched => a([{ y: [matched[1]], m: [matched[2]], d: [matched[3]], h: 'f' }])
+  ],
+  [
+    // YYYY/MM
+    /(\d{4})[/-](\d{1,2})/,
+    matched => a([{ y: [matched[1]], m: [matched[2]], d: 'f', h: 'f' }])
+  ],
+  [
+    // MM/DD
+    /(\d{1,2})[/-](\d{1,2})/,
+    matched => a([{ m: [matched[1]], d: [matched[2]], h: 'f' }])
+  ],
+  [
+    // HH:00
+    /(\d{1,2}):00/,
+    matched => a({ h: [matched[1]] })
+  ],
+  [
     /(\d{4})年?/,
     matched => a([{ y: [matched[1]], m: 'f', d: 'f', h: 'f' }])
   ],
@@ -57,6 +77,10 @@ const absoluteMutations = [
     }
   ],
   [
+    /(今年|本年)/,
+    (_, base) => a({ y: [base.year()], m: 'f', d: 'f', h: 'f' })
+  ],
+  [
     /(去年|昨年)/,
     (_, base) => a({ y: [base.year() - 1], m: 'f', d: 'f', h: 'f' })
   ],
@@ -75,6 +99,26 @@ const absoluteMutations = [
   [
     /午後/,
     a({ h: [12, 23] })
+  ],
+  [
+    /未明/,
+    a({ h: [0, 2] })
+  ],
+  [
+    /朝/,
+    a({ h: [6, 8] })
+  ],
+  [
+    /昼頃?/,
+    a({ h: [11, 12] })
+  ],
+  [
+    /夕方/,
+    a({ h: [15, 17] })
+  ],
+  [
+    /夜/,
+    a({ h: [18, 23] })
   ],
   [
     /ここ(\d+)年/,
