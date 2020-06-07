@@ -2,6 +2,26 @@ const { a } = require('./')
 
 const absoluteMutations = [
   [
+    // YYYY/MM/DD
+    /(\d{4})[/-](\d{1,2})[/-](\d{1,2})/,
+    matched => a([{ y: [matched[1]], m: [matched[2]], d: [matched[3]], h: 'f' }])
+  ],
+  [
+    // YYYY/MM
+    /(\d{4})[/-](\d{1,2})/,
+    matched => a([{ y: [matched[1]], m: [matched[2]], d: 'f', h: 'f' }])
+  ],
+  [
+    // MM/DD
+    /(\d{1,2})[/-](\d{1,2})/,
+    matched => a([{ m: [matched[1]], d: [matched[2]], h: 'f' }])
+  ],
+  [
+    // HH:00
+    /(\d{1,2}):00/,
+    matched => a({ h: [matched[1]] })
+  ],
+  [
     /(\d{4})年?/,
     matched => a([{ y: [matched[1]], m: 'f', d: 'f', h: 'f' }])
   ],
